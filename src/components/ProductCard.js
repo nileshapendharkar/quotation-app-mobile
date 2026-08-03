@@ -1,0 +1,122 @@
+import React, { useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Heart, PlusCircle, Check } from 'lucide-react-native';
+import { FavoriteContext } from '../context/FavoriteContext';
+import { CartContext } from '../context/CartContext';
+
+export default function ProductCard({ product, onSelect }) {
+  const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
+  const { addToCart } = useContext(CartContext);
+
+  const favorited = isFavorite(product.id);
+
+  return (
+    <View style={styles.card}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect && onSelect(product)}>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: product.image }} style={styles.image} resizeMode="cover" />
+          
+          <TouchableOpacity 
+            style={styles.heartButton}
+            onPress={() => toggleFavorite(product)}
+          >
+            <Heart size={18} color={favorited ? '#ef4444' : '#ffffff'} fill={favorited ? '#ef4444' : 'transparent'} />
+          </TouchableOpacity>
+
+          {product.categoryName && (
+            <View style={styles.categoryBadge}>
+              <Text style={styles.categoryText}>{product.categoryName}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.content}>
+          <Text style={styles.title} numberOfLines={2}>{product.name}</Text>
+          <Text style={styles.policyTag}>Zero Price • Quotation Only</Text>
+
+          <TouchableOpacity 
+            style={styles.addButton}
+            onPress={() => addToCart(product, 1)}
+          >
+            <PlusCircle size={16} color="#000000" />
+            <Text style={styles.addButtonText}>Add to Quote Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    margin: 6,
+    backgroundColor: '#1e293b',
+    borderRadius: 14,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  imageContainer: {
+    height: 140,
+    position: 'relative',
+    backgroundColor: '#0f172a',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  heartButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    padding: 6,
+    borderRadius: 20,
+  },
+  categoryBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    backgroundColor: 'rgba(56, 189, 248, 0.9)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  categoryText: {
+    color: '#000000',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  content: {
+    padding: 12,
+  },
+  title: {
+    color: '#f8fafc',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
+    marginBottom: 4,
+  },
+  policyTag: {
+    color: '#38bdf8',
+    fontSize: 10,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  addButton: {
+    backgroundColor: '#38bdf8',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  addButtonText: {
+    color: '#000000',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+});
