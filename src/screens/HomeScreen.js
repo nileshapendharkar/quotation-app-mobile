@@ -6,73 +6,36 @@ import { apiRequest } from '../api';
 
 export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
   const [categories, setCategories] = useState([
-    { id: '', name: 'All Products' },
-    { id: 'cat_tanks', name: 'Water Storage Tanks' },
-    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings' },
-    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings' },
-    { id: 'cat_swr', name: 'SWR Drainage' },
-    { id: 'cat_agri', name: 'Agriculture Pipes' },
-    { id: 'cat_hdpe', name: 'HDPE Pipes' },
-    { id: 'cat_accessories', name: 'Accessories' }
+    { id: '', name: 'All Groups', image: null },
+    { id: 'cat_tanks', name: 'Water Storage Tanks', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/tank.png' },
+    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/cpvc.png' },
+    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/upvc.png' },
+    { id: 'cat_swr', name: 'SWR Drainage Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/SWR-Pipes.png' },
+    { id: 'cat_casing', name: 'Casing Pipes - Blue', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Casing-Pipe.png' },
+    { id: 'cat_agri', name: 'Agriculture Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Agri-Pipes.png' },
+    { id: 'cat_hdpe', name: 'HDPE Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/hdpe.png' },
+    { id: 'cat_sprinkler', name: 'Sprinkler Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/Sprinkler-Pipe.png' },
+    { id: 'cat_column', name: 'Column Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Column-Pipes.png' },
+    { id: 'cat_sanitary', name: 'Toilet Seat Cover & Flushing Cistern', image: 'https://www.ganeshgouriindustries.com/images/index/SANITARY-WARE.png' },
+    { id: 'cat_eco_drainage', name: 'Eco Drainage Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/Dranage-Pipe.png' },
+    { id: 'cat_garden', name: 'Garden, Braided & LDPE Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/C.png' }
   ]);
 
-  const [products, setProducts] = useState([
-    {
-      id: "prod_1",
-      name: "10 Layer Ora Water Tank",
-      categoryId: "cat_tanks",
-      categoryName: "Water Storage Tanks",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/10-layer-orange-water-tank.webp",
-      description: "Premium 10-layer orange water storage tank. 500L to 10000L."
-    },
-    {
-      id: "prod_2",
-      name: "10 Layer Gold Water Tank",
-      categoryId: "cat_tanks",
-      categoryName: "Water Storage Tanks",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/10-layer-gold-water-tank.webp",
-      description: "10-layer gold series with UV protection and food-grade inner layer."
-    },
-    {
-      id: "prod_3",
-      name: "3 Layer Water Tank",
-      categoryId: "cat_tanks",
-      categoryName: "Water Storage Tanks",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/3-layer-water-tank.webp",
-      description: "Triple layer tank with black middle layer. ISI certified."
-    },
-    {
-      id: "prod_7",
-      name: "UPVC Plumbing Pipes (Sch 40 & 80)",
-      categoryId: "cat_upvc",
-      categoryName: "UPVC Pipes & Fittings",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/upvc-pipes-fittings.webp",
-      description: "Lead-free ASTM UPVC pipes. 15mm to 50mm."
-    },
-    {
-      id: "prod_9",
-      name: "CPVC Pipes (SDR 11 Series)",
-      categoryId: "cat_cpvc",
-      categoryName: "CPVC Pipes & Fittings",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/cpvc-pipe-fittings.webp",
-      description: "Hot & cold water CPVC pipes. Up to 93°C."
-    },
-    {
-      id: "prod_11",
-      name: "SWR Drainage Pipes",
-      categoryId: "cat_swr",
-      categoryName: "SWR Drainage",
-      image: "https://www.ganeshgouriindustries.com/assets/img/product/swr-drainage-pipes-fittings.webp",
-      description: "Soil, waste and rainwater drainage. 75mm to 160mm."
-    }
-  ]);
-
+  const [products, setProducts] = useState([]);
   const [selectedCat, setSelectedCat] = useState('');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    fetchBackendCategories();
     fetchBackendData();
   }, [selectedCat, search]);
+
+  const fetchBackendCategories = async () => {
+    const res = await apiRequest('/categories');
+    if (res.success && res.categories && res.categories.length > 0) {
+      setCategories([{ id: '', name: 'All Groups', image: null }, ...res.categories]);
+    }
+  };
 
   const fetchBackendData = async () => {
     let url = '/products?';
@@ -80,7 +43,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
     if (search) url += `search=${encodeURIComponent(search)}&`;
 
     const res = await apiRequest(url);
-    if (res.success && res.products && res.products.length > 0) {
+    if (res.success && res.products) {
       setProducts(res.products);
     }
   };
@@ -134,6 +97,9 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
                 style={[styles.catChip, isSelected && styles.catChipActive]}
                 onPress={() => setSelectedCat(cat.id)}
               >
+                {cat.image ? (
+                  <Image source={{ uri: cat.image }} style={styles.catChipImg} resizeMode="contain" />
+                ) : null}
                 <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
                   {cat.name}
                 </Text>
@@ -229,12 +195,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   catChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  catChipImg: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
+    borderRadius: 4,
   },
   catChipActive: {
     backgroundColor: 'rgba(56, 189, 248, 0.2)',
