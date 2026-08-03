@@ -30,8 +30,8 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
         <View style={styles.logo}>
           <ShieldCheck size={32} color="#000" />
         </View>
-        <Text style={styles.brandTitle}>Product Quotation App</Text>
-        <Text style={styles.brandSubtitle}>Strictly No Price • Name & Qty Only</Text>
+        <Text style={styles.brandTitle}>Gouri Aqua Plast</Text>
+        <Text style={styles.brandSubtitle}>Ganesh Gouri Industries • Tanks, Pipes & Fittings</Text>
       </View>
 
       {error ? (

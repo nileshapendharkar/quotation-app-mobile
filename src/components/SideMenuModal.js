@@ -101,8 +101,8 @@ export default function SideMenuModal({ visible, onClose, onNavigate }) {
 
           {/* Policy footer */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Product Quotation App v1.0</Text>
-            <Text style={styles.footerSub}>Zero Price • Quantity Only</Text>
+            <Text style={styles.footerText}>Gouri Aqua Plast v1.0</Text>
+            <Text style={styles.footerSub}>Ganesh Gouri Industries • Quotation Only</Text>
           </View>
         </View>
       </View>

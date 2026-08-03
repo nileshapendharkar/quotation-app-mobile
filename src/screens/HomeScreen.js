@@ -6,61 +6,64 @@ import { apiRequest } from '../api';
 
 export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
   const [categories, setCategories] = useState([
-    { id: '', name: 'All Categories' },
-    { id: 'cat_1', name: 'Industrial Safety', image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&q=80' },
-    { id: 'cat_2', name: 'Office Electronics', image: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400&q=80' },
-    { id: 'cat_3', name: 'Heavy Machinery Parts', image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80' },
-    { id: 'cat_4', name: 'Packaging Materials', image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&q=80' }
+    { id: '', name: 'All Products' },
+    { id: 'cat_tanks', name: 'Water Storage Tanks' },
+    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings' },
+    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings' },
+    { id: 'cat_swr', name: 'SWR Drainage' },
+    { id: 'cat_agri', name: 'Agriculture Pipes' },
+    { id: 'cat_hdpe', name: 'HDPE Pipes' },
+    { id: 'cat_accessories', name: 'Accessories' }
   ]);
 
   const [products, setProducts] = useState([
     {
       id: "prod_1",
-      name: "Pro-Grade Heavy Duty Safety Helmet",
-      categoryId: "cat_1",
-      categoryName: "Industrial Safety",
-      image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80",
-      description: "Impact-resistant ABS shell with 6-point textile suspension."
+      name: "10 Layer Ora Water Tank",
+      categoryId: "cat_tanks",
+      categoryName: "Water Storage Tanks",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/10-layer-orange-water-tank.webp",
+      description: "Premium 10-layer orange water storage tank. 500L to 10000L."
     },
     {
       id: "prod_2",
-      name: "High-Visibility Reflective Vest (Class 3)",
-      categoryId: "cat_1",
-      categoryName: "Industrial Safety",
-      image: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=500&q=80",
-      description: "Breathable polyester fabric with 2-inch reflective stripes."
+      name: "10 Layer Gold Water Tank",
+      categoryId: "cat_tanks",
+      categoryName: "Water Storage Tanks",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/10-layer-gold-water-tank.webp",
+      description: "10-layer gold series with UV protection and food-grade inner layer."
     },
     {
       id: "prod_3",
-      name: "Ergonomic Mesh Task Chair",
-      categoryId: "cat_2",
-      categoryName: "Office Electronics",
-      image: "https://images.unsplash.com/photo-1580481072645-022f9a6d83d0?w=500&q=80",
-      description: "Adjustable lumbar support and 3D armrests."
+      name: "3 Layer Water Tank",
+      categoryId: "cat_tanks",
+      categoryName: "Water Storage Tanks",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/3-layer-water-tank.webp",
+      description: "Triple layer tank with black middle layer. ISI certified."
     },
     {
-      id: "prod_4",
-      name: "Dual-Band Enterprise Wi-Fi 6 Router",
-      categoryId: "cat_2",
-      categoryName: "Office Electronics",
-      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&q=80",
-      description: "High-density multi-gigabit throughput."
+      id: "prod_7",
+      name: "UPVC Plumbing Pipes (Sch 40 & 80)",
+      categoryId: "cat_upvc",
+      categoryName: "UPVC Pipes & Fittings",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/upvc-pipes-fittings.webp",
+      description: "Lead-free ASTM UPVC pipes. 15mm to 50mm."
     },
     {
-      id: "prod_5",
-      name: "Precision Hydraulic Pressure Control Valve",
-      categoryId: "cat_3",
-      categoryName: "Heavy Machinery Parts",
-      image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&q=80",
-      description: "Forged alloy steel body rated for high pressure systems."
+      id: "prod_9",
+      name: "CPVC Pipes (SDR 11 Series)",
+      categoryId: "cat_cpvc",
+      categoryName: "CPVC Pipes & Fittings",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/cpvc-pipe-fittings.webp",
+      description: "Hot & cold water CPVC pipes. Up to 93°C."
     },
     {
-      id: "prod_6",
-      name: "Heavy-Duty Ceramic Ball Bearings (Set of 10)",
-      categoryId: "cat_3",
-      categoryName: "Heavy Machinery Parts",
-      image: "https://images.unsplash.com/photo-1618042164219-62c820f10723?w=500&q=80",
-      description: "Low-friction silicon nitride ceramic balls."
+      id: "prod_11",
+      name: "SWR Drainage Pipes",
+      categoryId: "cat_swr",
+      categoryName: "SWR Drainage",
+      image: "https://www.ganeshgouriindustries.com/assets/img/product/swr-drainage-pipes-fittings.webp",
+      description: "Soil, waste and rainwater drainage. 75mm to 160mm."
     }
   ]);
 
@@ -97,8 +100,8 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
         </TouchableOpacity>
 
         <View style={styles.titleBox}>
-          <Text style={styles.headerTitle}>Product Catalog</Text>
-          <Text style={styles.headerSub}>Strictly Zero Price Policy</Text>
+          <Text style={styles.headerTitle}>Gouri Aqua Plast</Text>
+          <Text style={styles.headerSub}>Tanks, Pipes & Fittings Catalog</Text>
         </View>
 
         <View style={styles.policyBadge}>
