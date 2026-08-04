@@ -1,0 +1,5 @@
+services:
+  - type: static
+    name: quotation-app-mobile
+    buildCommand: npm install && npx expo export -p web
+    publishPath: dist
