@@ -27,6 +27,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "850597b0-d5a8-47a2-beb4-2cba310d9650"
+      }
+    },
+    "owner": "npendharkar4"
   }
 }
