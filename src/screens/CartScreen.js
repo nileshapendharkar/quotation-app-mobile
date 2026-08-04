@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Modal, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Modal, Alert, Linking } from 'react-native';
 import { ShoppingBag, Plus, Minus, Trash2, FileCheck, X, Share2, Download } from 'lucide-react-native';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
@@ -48,6 +48,31 @@ export default function CartScreen({ onNavigateOrders }) {
       setGeneratedOrder(mockOrder);
       setPdfModalVisible(true);
       clearCart();
+    }
+  };
+
+  const handleShareWhatsApp = async () => {
+    if (!generatedOrder) return;
+
+    const itemsText = generatedOrder.items
+      .map(item => `• ${item.productName} (Qty: ${item.quantity})`)
+      .join('\n');
+
+    const message = `*Gouri Aqua Plast - Product Quotation*\n` +
+      `*Ref:* ${generatedOrder.orderNo}\n\n` +
+      `*Customer Details:*\n` +
+      `Name: ${generatedOrder.userName}\n` +
+      `Mobile: ${generatedOrder.userMobile}\n` +
+      `Company: ${generatedOrder.companyName || 'Individual'}\n\n` +
+      `*Items Requested:*\n${itemsText}\n\n` +
+      `*Policy:* Zero Price Mode (Quotation request only).`;
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch (err) {
+      Alert.alert('Cannot Open WhatsApp', 'Please verify that WhatsApp is installed on your device.');
     }
   };
 
@@ -173,7 +198,7 @@ export default function CartScreen({ onNavigateOrders }) {
               <View style={styles.pdfActions}>
                 <TouchableOpacity 
                   style={styles.shareBtn}
-                  onPress={() => Alert.alert('Share Quotation', 'Sharing quotation via WhatsApp / Email')}
+                  onPress={handleShareWhatsApp}
                 >
                   <Share2 size={16} color="#38bdf8" />
                   <Text style={styles.shareText}>Share via WhatsApp</Text>
