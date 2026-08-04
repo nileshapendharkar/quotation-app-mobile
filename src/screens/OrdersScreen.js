@@ -120,7 +120,7 @@ export default function OrdersScreen() {
               <View style={styles.itemsList}>
                 {item.items.map((prod, idx) => (
                   <View key={idx} style={styles.itemRow}>
-                    <Text style={styles.itemTitle}>{prod.productName}</Text>
+                    <Text style={styles.itemTitle}>{prod.productName}{prod.size ? ` (Size: ${prod.size})` : ''}</Text>
                     <Text style={styles.itemQty}>× {prod.quantity} Units</Text>
                   </View>
                 ))}

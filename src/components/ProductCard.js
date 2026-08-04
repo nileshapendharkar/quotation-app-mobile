@@ -36,10 +36,10 @@ export default function ProductCard({ product, onSelect }) {
 
           <TouchableOpacity 
             style={styles.addButton}
-            onPress={() => addToCart(product, 1)}
+            onPress={() => onSelect && onSelect(product)}
           >
             <PlusCircle size={16} color="#ffffff" />
-            <Text style={styles.addButtonText}>Add to Quote Cart</Text>
+            <Text style={styles.addButtonText}>Select Size & Qty</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

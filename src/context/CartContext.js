@@ -3,24 +3,15 @@ import React, { createContext, useState } from 'react';
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([
-    {
-      productId: "prod_1",
-      productName: "Pro-Grade Heavy Duty Safety Helmet",
-      image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80",
-      quantity: 50
-    },
-    {
-      productId: "prod_4",
-      productName: "Dual-Band Enterprise Wi-Fi 6 Router",
-      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&q=80",
-      quantity: 10
-    }
-  ]);
+  const [cartItems, setCartItems] = useState([]);
 
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = (product, quantity = 1, size = '') => {
+    const itemSize = size || '';
     setCartItems(prev => {
-      const existingIdx = prev.findIndex(item => item.productId === product.id || item.productId === product.productId);
+      const existingIdx = prev.findIndex(item => 
+        (item.productId === product.id || item.productId === product.productId) &&
+        (item.size === itemSize || (!item.size && !itemSize))
+      );
       if (existingIdx >= 0) {
         const updated = [...prev];
         updated[existingIdx].quantity += quantity;
@@ -32,17 +23,19 @@ export const CartProvider = ({ children }) => {
             productId: product.id || product.productId,
             productName: product.name || product.productName,
             image: product.image,
-            quantity: quantity
+            quantity: quantity,
+            size: itemSize
           }
         ];
       }
     });
   };
 
-  const updateQuantity = (productId, delta) => {
+  const updateQuantity = (productId, delta, size = '') => {
+    const itemSize = size || '';
     setCartItems(prev => {
       return prev.map(item => {
-        if (item.productId === productId) {
+        if (item.productId === productId && (item.size === itemSize || (!item.size && !itemSize))) {
           const newQty = item.quantity + delta;
           return newQty > 0 ? { ...item, quantity: newQty } : null;
         }
@@ -51,8 +44,11 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item.productId !== productId));
+  const removeFromCart = (productId, size = '') => {
+    const itemSize = size || '';
+    setCartItems(prev => prev.filter(item => 
+      !(item.productId === productId && (item.size === itemSize || (!item.size && !itemSize)))
+    ));
   };
 
   const clearCart = () => {

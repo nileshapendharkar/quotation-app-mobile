@@ -21,7 +21,8 @@ export default function CartScreen({ onNavigateOrders }) {
       items: cartItems.map(i => ({
         productId: i.productId,
         productName: i.productName,
-        quantity: i.quantity
+        quantity: i.quantity,
+        size: i.size || ''
       })),
       notes: "Generated via Mobile Quotation App"
     };
@@ -55,7 +56,7 @@ export default function CartScreen({ onNavigateOrders }) {
     if (!generatedOrder) return;
 
     const itemsText = generatedOrder.items
-      .map(item => `• ${item.productName} (Qty: ${item.quantity})`)
+      .map(item => `• ${item.productName}${item.size ? ` (Size: ${item.size})` : ''} (Qty: ${item.quantity})`)
       .join('\n');
 
     const message = `*Gouri Aqua Plast - Product Quotation*\n` +
@@ -95,7 +96,7 @@ export default function CartScreen({ onNavigateOrders }) {
           {/* Products Grid (2 per row) */}
           <FlatList
             data={cartItems}
-            keyExtractor={(item) => item.productId}
+            keyExtractor={(item) => item.productId + '_' + (item.size || '')}
             numColumns={2}
             renderItem={({ item }) => (
               <View style={styles.cartCard}>
@@ -103,7 +104,7 @@ export default function CartScreen({ onNavigateOrders }) {
                   <Image source={{ uri: item.image }} style={styles.cardImage} />
                   <TouchableOpacity
                     style={styles.deleteBadge}
-                    onPress={() => removeFromCart(item.productId)}
+                    onPress={() => removeFromCart(item.productId, item.size)}
                   >
                     <Trash2 size={14} color="#ef4444" />
                   </TouchableOpacity>
@@ -111,13 +112,20 @@ export default function CartScreen({ onNavigateOrders }) {
 
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle} numberOfLines={2}>{item.productName}</Text>
+                  
+                  {item.size ? (
+                    <View style={styles.sizeBadge}>
+                      <Text style={styles.sizeText}>Size: {item.size}</Text>
+                    </View>
+                  ) : null}
+
                   <Text style={styles.policyLabel}>Quantity Based Quote</Text>
 
                   {/* Quantity Stepper (Increase/Decrease) */}
                   <View style={styles.qtyContainer}>
                     <TouchableOpacity
                       style={styles.qtyBtn}
-                      onPress={() => updateQuantity(item.productId, -1)}
+                      onPress={() => updateQuantity(item.productId, -1, item.size)}
                     >
                       <Minus size={14} color="#f8fafc" />
                     </TouchableOpacity>
@@ -126,7 +134,7 @@ export default function CartScreen({ onNavigateOrders }) {
 
                     <TouchableOpacity
                       style={styles.qtyBtn}
-                      onPress={() => updateQuantity(item.productId, 1)}
+                      onPress={() => updateQuantity(item.productId, 1, item.size)}
                     >
                       <Plus size={14} color="#f8fafc" />
                     </TouchableOpacity>
@@ -501,5 +509,21 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 13,
     fontWeight: '800',
+  },
+  sizeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(14, 165, 233, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(14, 165, 233, 0.15)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+    marginBottom: 2,
+  },
+  sizeText: {
+    color: '#0ea5e9',
+    fontSize: 9,
+    fontWeight: '700',
   },
 });

@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image } from 'react-native';
-import { Menu, Search, Filter, Shield } from 'lucide-react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal } from 'react-native';
+import { Menu, Search, Filter, Shield, Plus, Minus, X, Check } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import { apiRequest } from '../api';
+import { CartContext } from '../context/CartContext';
 
 export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
+  const { addToCart } = useContext(CartContext);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [qty, setQty] = useState(1);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [successMsg, setSuccessMsg] = useState(false);
+
   const [categories, setCategories] = useState([
     { id: '', name: 'All Groups', image: null },
     { id: 'cat_tanks', name: 'Water Storage Tanks', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/tank.png' },
@@ -53,6 +60,23 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
     const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
     return matchesCat && matchesSearch;
   });
+
+  const handleOpenProductDetail = (product) => {
+    setSelectedProduct(product);
+    setQty(1);
+    setSelectedSize(product.sizes && product.sizes.length > 0 ? product.sizes[0] : '');
+    setSuccessMsg(false);
+  };
+
+  const handleConfirmAddToCart = () => {
+    if (!selectedProduct) return;
+    addToCart(selectedProduct, qty, selectedSize);
+    setSuccessMsg(true);
+    setTimeout(() => {
+      setSelectedProduct(null);
+      setSuccessMsg(false);
+    }, 1200);
+  };
 
   return (
     <View style={styles.container}>
@@ -115,7 +139,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
         keyExtractor={(item) => item.id}
         numColumns={2}
         renderItem={({ item }) => (
-          <ProductCard product={item} onSelect={onSelectProduct} />
+          <ProductCard product={item} onSelect={handleOpenProductDetail} />
         )}
         contentContainerStyle={styles.gridContent}
         ListEmptyComponent={
@@ -124,6 +148,130 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
           </View>
         }
       />
+
+      {/* Product Detail & size selection modal */}
+      <Modal
+        visible={!!selectedProduct}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => !successMsg && setSelectedProduct(null)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => !successMsg && setSelectedProduct(null)}
+        >
+          <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
+            {selectedProduct && (
+              <View style={{ width: '100%' }}>
+                {/* Header */}
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalProductTitle} numberOfLines={1}>
+                      {selectedProduct.name}
+                    </Text>
+                    <Text style={styles.modalCategoryTitle}>
+                      {selectedProduct.categoryName || 'Catalog Item'}
+                    </Text>
+                  </View>
+                  <TouchableOpacity 
+                    style={styles.closeModalBtn} 
+                    onPress={() => !successMsg && setSelectedProduct(null)}
+                  >
+                    <X size={20} color="#64748b" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Content */}
+                <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
+                  <Image source={{ uri: selectedProduct.image }} style={styles.modalImage} resizeMode="contain" />
+                  
+                  <Text style={styles.modalSectionTitle}>Specifications</Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedProduct.description || 'No description available for this item.'}
+                  </Text>
+
+                  {/* Size Options Selection */}
+                  {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                    <View style={styles.sizesSection}>
+                      <Text style={styles.modalSectionTitle}>Select Size Option</Text>
+                      <View style={styles.sizeChipsRow}>
+                        {selectedProduct.sizes.map((sz, i) => {
+                          const isSel = selectedSize === sz;
+                          return (
+                            <TouchableOpacity
+                              key={i}
+                              style={[styles.sizeSelectorChip, isSel && styles.sizeSelectorChipActive]}
+                              onPress={() => !successMsg && setSelectedSize(sz)}
+                            >
+                              <Text style={[styles.sizeSelectorChipText, isSel && styles.sizeSelectorChipTextActive]}>
+                                {sz}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  )}
+
+                  {/* Quantity Counter */}
+                  <View style={styles.qtySection}>
+                    <Text style={styles.modalSectionTitle}>Configure Quantity</Text>
+                    <View style={styles.stepperContainer}>
+                      <TouchableOpacity
+                        style={styles.stepperBtn}
+                        onPress={() => !successMsg && setQty(prev => Math.max(1, prev - 10))}
+                      >
+                        <Text style={styles.stepperBtnTxt}>-10</Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity
+                        style={styles.stepperBtn}
+                        onPress={() => !successMsg && setQty(prev => Math.max(1, prev - 1))}
+                      >
+                        <Minus size={14} color="#0f172a" />
+                      </TouchableOpacity>
+
+                      <Text style={styles.stepperValue}>{qty}</Text>
+
+                      <TouchableOpacity
+                        style={styles.stepperBtn}
+                        onPress={() => !successMsg && setQty(prev => prev + 1)}
+                      >
+                        <Plus size={14} color="#0f172a" />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.stepperBtn}
+                        onPress={() => !successMsg && setQty(prev => prev + 10)}
+                      >
+                        <Text style={styles.stepperBtnTxt}>+10</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </ScrollView>
+
+                {/* Footer Add Button */}
+                <View style={styles.modalFooter}>
+                  {successMsg ? (
+                    <View style={styles.successMessageBtn}>
+                      <Check size={18} color="#ffffff" style={{ marginRight: 6 }} />
+                      <Text style={styles.successMessageText}>Added to Quote Cart!</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity 
+                      style={styles.confirmAddBtn} 
+                      onPress={handleConfirmAddToCart}
+                    >
+                      <Text style={styles.confirmAddBtnText}>Add to Quote Cart</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -234,5 +382,163 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#64748b',
     fontSize: 13,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxHeight: '85%',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 8,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    marginBottom: 12,
+  },
+  modalProductTitle: {
+    fontSize: 16,
+    fontWeight: '805',
+    color: '#0f172a',
+  },
+  modalCategoryTitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#0ea5e9',
+    marginTop: 2,
+  },
+  closeModalBtn: {
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+  },
+  modalScroll: {
+    maxHeight: 380,
+  },
+  modalImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
+    backgroundColor: '#f8fafc',
+    marginBottom: 16,
+  },
+  modalSectionTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 8,
+  },
+  modalDescription: {
+    fontSize: 12,
+    color: '#64748b',
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  sizesSection: {
+    marginBottom: 16,
+  },
+  sizeChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  sizeSelectorChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+  },
+  sizeSelectorChipActive: {
+    borderColor: '#0ea5e9',
+    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+  },
+  sizeSelectorChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  sizeSelectorChipTextActive: {
+    color: '#0ea5e9',
+    fontWeight: '800',
+  },
+  qtySection: {
+    marginBottom: 12,
+  },
+  stepperContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stepperBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  stepperBtnTxt: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  stepperValue: {
+    width: 48,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  modalFooter: {
+    marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+    paddingTop: 14,
+  },
+  confirmAddBtn: {
+    width: '100%',
+    height: 46,
+    backgroundColor: '#0ea5e9',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmAddBtnText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  successMessageBtn: {
+    width: '100%',
+    height: 46,
+    backgroundColor: '#10b981',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  successMessageText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '850',
   },
 });
