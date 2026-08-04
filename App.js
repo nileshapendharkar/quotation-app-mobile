@@ -17,6 +17,7 @@ import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 
 import BottomTabBar from './src/components/BottomTabBar';
 import SideMenuModal from './src/components/SideMenuModal';
+import LaunchAnimation from './src/components/LaunchAnimation';
 
 function MainAppNavigator() {
   const { user } = useContext(AuthContext);
@@ -99,11 +100,18 @@ function MainAppNavigator() {
 }
 
 export default function App() {
+  const [showLaunch, setShowLaunch] = useState(true);
+
   return (
     <AuthProvider>
       <CartProvider>
         <FavoriteProvider>
-          <MainAppNavigator />
+          <View style={{ flex: 1 }}>
+            <MainAppNavigator />
+            {showLaunch && (
+              <LaunchAnimation onFinish={() => setShowLaunch(false)} />
+            )}
+          </View>
         </FavoriteProvider>
       </CartProvider>
     </AuthProvider>
