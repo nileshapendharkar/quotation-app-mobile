@@ -27,8 +27,8 @@ function MainAppNavigator() {
 
   if (!user) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0b0f19' }}>
-        <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+      <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
         {authScreen === 'Login' && (
           <LoginScreen
             onNavigateRegister={() => setAuthScreen('Register')}
@@ -77,7 +77,7 @@ function MainAppNavigator() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.screenContainer}>
         {renderActiveScreen()}
       </View>
@@ -113,7 +113,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   screenContainer: {
     flex: 1,

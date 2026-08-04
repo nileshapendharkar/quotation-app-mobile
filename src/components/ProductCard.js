@@ -38,7 +38,7 @@ export default function ProductCard({ product, onSelect }) {
             style={styles.addButton}
             onPress={() => addToCart(product, 1)}
           >
-            <PlusCircle size={16} color="#000000" />
+            <PlusCircle size={16} color="#ffffff" />
             <Text style={styles.addButtonText}>Add to Quote Cart</Text>
           </TouchableOpacity>
         </View>
@@ -51,16 +51,16 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     margin: 6,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
   },
   imageContainer: {
     height: 140,
     position: 'relative',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f1f5f9',
   },
   image: {
     width: '100%',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 6,
     borderRadius: 20,
   },
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 8,
     left: 8,
-    backgroundColor: 'rgba(56, 189, 248, 0.9)',
+    backgroundColor: '#0ea5e9',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
   },
   categoryText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: 10,
     fontWeight: '800',
   },
@@ -92,20 +92,20 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   title: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
     marginBottom: 4,
   },
   policyTag: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 10,
     fontWeight: '600',
     marginBottom: 10,
   },
   addButton: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   addButtonText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: 12,
     fontWeight: '800',
   },

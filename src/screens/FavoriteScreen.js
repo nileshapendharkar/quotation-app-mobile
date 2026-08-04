@@ -43,7 +43,7 @@ export default function FavoriteScreen({ onNavigateHome }) {
                     style={styles.addCartBtn}
                     onPress={() => addToCart(item, 1)}
                   >
-                    <PlusCircle size={14} color="#000" />
+                    <PlusCircle size={14} color="#fff" />
                     <Text style={styles.addCartText}>Add to Quote Cart</Text>
                   </TouchableOpacity>
 
@@ -66,23 +66,23 @@ export default function FavoriteScreen({ onNavigateHome }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   topHeader: {
     paddingHorizontal: 20,
     paddingTop: 45,
     paddingBottom: 16,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    borderBottomColor: '#e2e8f0',
   },
   headerTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 20,
     fontWeight: '800',
   },
   headerSub: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 12,
     marginTop: 2,
   },
@@ -93,16 +93,16 @@ const styles = StyleSheet.create({
   },
   favoriteCard: {
     flexDirection: 'row',
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
   },
   cardImage: {
     width: 110,
     height: 110,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f1f5f9',
   },
   cardInfo: {
     flex: 1,
@@ -110,18 +110,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardCategory: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 11,
     fontWeight: '700',
   },
   cardTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 14,
     fontWeight: '700',
     marginTop: 2,
   },
   zeroPricePolicy: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 11,
     marginVertical: 4,
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   addCartBtn: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addCartText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: 11,
     fontWeight: '800',
   },
@@ -155,26 +155,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   emptyTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 18,
     fontWeight: '800',
     marginTop: 16,
   },
   emptySub: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 13,
     textAlign: 'center',
     marginTop: 6,
   },
   browseBtn: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
     marginTop: 20,
   },
   browseText: {
-    color: '#000000',
+    color: '#ffffff',
     fontWeight: '800',
     fontSize: 14,
   },

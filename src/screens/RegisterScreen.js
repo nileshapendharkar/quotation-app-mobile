@@ -38,7 +38,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <TouchableOpacity onPress={onNavigateLogin} style={styles.backBtn}>
-        <ArrowLeft size={20} color="#38bdf8" />
+        <ArrowLeft size={20} color="#0ea5e9" />
         <Text style={styles.backText}>Back to Login</Text>
       </TouchableOpacity>
 
@@ -139,7 +139,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   content: {
     paddingHorizontal: 24,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backText: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -162,21 +162,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#f8fafc',
+    color: '#0f172a',
   },
   subtitle: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#64748b',
     marginTop: 4,
   },
   errorBox: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
     padding: 12,
     borderRadius: 10,
     marginBottom: 16,
   },
   errorText: {
-    color: '#fca5a5',
+    color: '#ef4444',
     textAlign: 'center',
     fontSize: 13,
   },
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
     borderRadius: 12,
     paddingHorizontal: 14,
     height: 50,
@@ -198,11 +198,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 14,
   },
   submitBtn: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
     height: 50,
     borderRadius: 12,
     justifyContent: 'center',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   submitText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: 15,
     fontWeight: '800',
   },

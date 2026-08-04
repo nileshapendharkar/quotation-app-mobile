@@ -49,23 +49,23 @@ export default function OrdersScreen() {
     if (status === 'Pending') {
       return (
         <View style={[styles.badge, styles.badgePending]}>
-          <Clock size={12} color="#f59e0b" />
-          <Text style={[styles.badgeText, { color: '#f59e0b' }]}>Pending</Text>
+          <Clock size={12} color="#d97706" />
+          <Text style={[styles.badgeText, { color: '#d97706' }]}>Pending</Text>
         </View>
       );
     }
     if (status === 'Dispatched') {
       return (
         <View style={[styles.badge, styles.badgeDispatched]}>
-          <CheckCircle2 size={12} color="#10b981" />
-          <Text style={[styles.badgeText, { color: '#10b981' }]}>Dispatched</Text>
+          <CheckCircle2 size={12} color="#059669" />
+          <Text style={[styles.badgeText, { color: '#059669' }]}>Dispatched</Text>
         </View>
       );
     }
     return (
       <View style={[styles.badge, styles.badgeCancelled]}>
-        <XCircle size={12} color="#ef4444" />
-        <Text style={[styles.badgeText, { color: '#ef4444' }]}>Cancelled</Text>
+        <XCircle size={12} color="#dc2626" />
+        <Text style={[styles.badgeText, { color: '#dc2626' }]}>Cancelled</Text>
       </View>
     );
   };
@@ -136,23 +136,23 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   topHeader: {
     paddingHorizontal: 20,
     paddingTop: 45,
     paddingBottom: 16,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    borderBottomColor: '#e2e8f0',
   },
   headerTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 20,
     fontWeight: '800',
   },
   headerSub: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 12,
     marginTop: 2,
   },
@@ -166,18 +166,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   tabBtnActive: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
+    borderColor: '#0ea5e9',
   },
   tabText: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 12,
     fontWeight: '600',
   },
   tabTextActive: {
-    color: '#000000',
+    color: '#ffffff',
     fontWeight: '800',
   },
   listContent: {
@@ -186,11 +189,11 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   orderCard: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -198,12 +201,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   orderNo: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 15,
     fontWeight: '800',
   },
   orderDate: {
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: 11,
     marginTop: 2,
   },
@@ -216,13 +219,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badgePending: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: 'rgba(217, 119, 6, 0.12)',
   },
   badgeDispatched: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: 'rgba(5, 150, 105, 0.12)',
   },
   badgeCancelled: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: 'rgba(220, 38, 38, 0.12)',
   },
   badgeText: {
     fontSize: 11,
@@ -230,7 +233,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#e2e8f0',
     marginVertical: 12,
   },
   sectionLabel: {
@@ -245,18 +248,18 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    backgroundColor: '#f8fafc',
     padding: 10,
     borderRadius: 8,
   },
   itemTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 13,
     fontWeight: '600',
     flex: 1,
   },
   itemQty: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -267,13 +270,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   emptyTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 18,
     fontWeight: '800',
     marginTop: 16,
   },
   emptySub: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 13,
     textAlign: 'center',
     marginTop: 6,

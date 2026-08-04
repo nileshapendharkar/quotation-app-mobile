@@ -32,12 +32,12 @@ export default function CompanyProfileScreen({ onNavigateBack }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <TouchableOpacity onPress={onNavigateBack} style={styles.backBtn}>
-        <ArrowLeft size={20} color="#38bdf8" />
+        <ArrowLeft size={20} color="#0ea5e9" />
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
 
       <View style={styles.header}>
-        <Building2 size={32} color="#38bdf8" style={{ marginBottom: 8 }} />
+        <Building2 size={32} color="#0ea5e9" style={{ marginBottom: 8 }} />
         <Text style={styles.title}>Company & Profile Details</Text>
         <Text style={styles.subtitle}>This information appears on generated PDF quotations.</Text>
       </View>
@@ -93,7 +93,7 @@ export default function CompanyProfileScreen({ onNavigateBack }) {
             <ActivityIndicator color="#000" />
           ) : (
             <>
-              <Save size={18} color="#000" />
+              <Save size={18} color="#fff" />
               <Text style={styles.saveText}>Save Profile Changes</Text>
             </>
           )}
@@ -106,7 +106,7 @@ export default function CompanyProfileScreen({ onNavigateBack }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   content: {
     paddingHorizontal: 20,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backText: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -128,12 +128,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 22,
     fontWeight: '800',
   },
   subtitle: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 13,
     marginTop: 4,
   },
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {},
   label: {
-    color: '#cbd5e1',
+    color: '#475569',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 6,
@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
     borderRadius: 12,
     paddingHorizontal: 14,
     height: 50,
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 14,
   },
   saveBtn: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: '#0ea5e9',
     height: 50,
     borderRadius: 12,
     flexDirection: 'row',
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   saveText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: 15,
     fontWeight: '800',
   },

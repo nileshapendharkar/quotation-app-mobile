@@ -59,7 +59,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
       {/* Top Header */}
       <View style={styles.topHeader}>
         <TouchableOpacity onPress={onOpenMenu} style={styles.menuBtn}>
-          <Menu size={22} color="#f8fafc" />
+          <Menu size={22} color="#0f172a" />
         </TouchableOpacity>
 
         <View style={styles.titleBox}>
@@ -68,7 +68,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
         </View>
 
         <View style={styles.policyBadge}>
-          <Shield size={14} color="#38bdf8" />
+          <Shield size={14} color="#0ea5e9" />
         </View>
       </View>
 
@@ -131,7 +131,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#f8fafc',
   },
   topHeader: {
     flexDirection: 'row',
@@ -140,32 +140,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 45,
     paddingBottom: 12,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    borderBottomColor: '#e2e8f0',
   },
   menuBtn: {
     padding: 8,
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '#f1f5f9',
   },
   titleBox: {
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 16,
     fontWeight: '800',
   },
   headerSub: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 11,
     fontWeight: '600',
   },
   policyBadge: {
     padding: 8,
     borderRadius: 10,
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+    backgroundColor: 'rgba(14, 165, 233, 0.12)',
   },
   searchSection: {
     paddingHorizontal: 16,
@@ -175,16 +175,16 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
     borderRadius: 12,
     paddingHorizontal: 14,
     height: 44,
   },
   searchInput: {
     flex: 1,
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 13,
   },
   categorySection: {
@@ -200,9 +200,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
   },
   catChipImg: {
     width: 20,
@@ -211,16 +211,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   catChipActive: {
-    backgroundColor: 'rgba(56, 189, 248, 0.2)',
-    borderColor: '#38bdf8',
+    backgroundColor: 'rgba(14, 165, 233, 0.15)',
+    borderColor: '#0ea5e9',
   },
   catChipText: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 12,
     fontWeight: '600',
   },
   catChipTextActive: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontWeight: '800',
   },
   gridContent: {

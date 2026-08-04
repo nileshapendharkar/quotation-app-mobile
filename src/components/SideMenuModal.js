@@ -56,14 +56,14 @@ export default function SideMenuModal({ visible, onClose, onNavigate }) {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.avatar}>
-              <UserCheck size={24} color="#38bdf8" />
+              <UserCheck size={24} color="#0ea5e9" />
             </View>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{user ? user.name : 'John Customer'}</Text>
               <Text style={styles.userEmail}>{user ? user.email : 'john@example.com'}</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={20} color="#94a3b8" />
+              <X size={20} color="#64748b" />
             </TouchableOpacity>
           </View>
 
@@ -80,7 +80,7 @@ export default function SideMenuModal({ visible, onClose, onNavigate }) {
                     onNavigate(item.id);
                   }}
                 >
-                  <IconComp size={20} color="#38bdf8" />
+                  <IconComp size={20} color="#0ea5e9" />
                   <Text style={styles.menuLabel}>{item.label}</Text>
                 </TouchableOpacity>
               );
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     width: '82%',
     height: '100%',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     paddingTop: 45,
     paddingHorizontal: 20,
   },
@@ -128,14 +128,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: '#e2e8f0',
     marginBottom: 15,
   },
   avatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    backgroundColor: 'rgba(14, 165, 233, 0.12)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -144,12 +144,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 16,
     fontWeight: '800',
   },
   userEmail: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontSize: 12,
     marginTop: 2,
   },
@@ -166,28 +166,28 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   menuLabel: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 15,
     fontWeight: '600',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#e2e8f0',
     marginVertical: 15,
   },
   footer: {
     paddingVertical: 20,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: '#e2e8f0',
     alignItems: 'center',
   },
   footerText: {
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: 12,
     fontWeight: '700',
   },
   footerSub: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontSize: 11,
     marginTop: 2,
   },

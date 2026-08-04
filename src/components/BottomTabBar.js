@@ -24,8 +24,8 @@ export default function BottomTabBar({ activeTab, onTabChange }) {
           >
             <IconComponent
               size={22}
-              color={isActive ? '#38bdf8' : '#94a3b8'}
-              fill={isActive && tab.id === 'Favorite' ? '#38bdf8' : 'transparent'}
+              color={isActive ? '#0ea5e9' : '#64748b'}
+              fill={isActive && tab.id === 'Favorite' ? '#0ea5e9' : 'transparent'}
             />
             <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
               {tab.label}
@@ -41,9 +41,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     height: 65,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: '#e2e8f0',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingBottom: 5,
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
-    color: '#94a3b8',
+    color: '#64748b',
     marginTop: 4,
     fontWeight: '500',
   },
   activeTabLabel: {
-    color: '#38bdf8',
+    color: '#0ea5e9',
     fontWeight: '800',
   },
 });
