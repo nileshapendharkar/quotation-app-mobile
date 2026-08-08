@@ -8,9 +8,9 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const login = async (email, password) => {
+  const login = async (userId, password) => {
     setLoading(true);
-    const res = await apiRequest('/auth/login', 'POST', { email, password });
+    const res = await apiRequest('/auth/login', 'POST', { userId, mobile: userId, password });
     setLoading(false);
 
     if (res.success) {

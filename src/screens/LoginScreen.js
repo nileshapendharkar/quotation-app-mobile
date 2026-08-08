@@ -1,23 +1,23 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { ShieldCheck, Mail, Lock, ArrowRight } from 'lucide-react-native';
+import { ShieldCheck, Phone, Lock, ArrowRight } from 'lucide-react-native';
 import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
   const { login } = useContext(AuthContext);
-  const [email, setEmail] = useState('john@example.com');
-  const [password, setPassword] = useState('admin123');
+  const [userId, setUserId] = useState('9225087140');
+  const [password, setPassword] = useState('GGi#4321');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
     setError('');
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    if (!userId || !password) {
+      setError('Please enter your Mobile Number / User ID and Password');
       return;
     }
     setLoading(true);
-    const res = await login(email, password);
+    const res = await login(userId, password);
     setLoading(false);
     if (!res.success) {
       setError(res.message);
@@ -31,7 +31,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
           <ShieldCheck size={32} color="#000" />
         </View>
         <Text style={styles.brandTitle}>Gouri Aqua Plast</Text>
-        <Text style={styles.brandSubtitle}>Ganesh Gouri Industries • Tanks, Pipes & Fittings</Text>
+        <Text style={styles.brandSubtitle}>Ganesh Gouri Industries • Mobile Quotation Engine</Text>
       </View>
 
       {error ? (
@@ -42,20 +42,20 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
 
       <View style={styles.form}>
         <View style={styles.inputContainer}>
-          <Mail size={18} color="#64748b" style={styles.icon} />
+          <Phone size={18} color="#0ea5e9" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Customer Email"
+            placeholder="Mobile Number / User ID"
             placeholderTextColor="#64748b"
-            value={email}
-            onChangeText={setEmail}
+            value={userId}
+            onChangeText={setUserId}
             autoCapitalize="none"
-            keyboardType="email-address"
+            keyboardType="phone-pad"
           />
         </View>
 
         <View style={styles.inputContainer}>
-          <Lock size={18} color="#64748b" style={styles.icon} />
+          <Lock size={18} color="#0ea5e9" style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -65,10 +65,6 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
             onChangeText={setPassword}
           />
         </View>
-
-        <TouchableOpacity onPress={onNavigateForgot} style={styles.forgotBtn}>
-          <Text style={styles.forgotText}>Forgot Password?</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity style={styles.submitBtn} onPress={handleLogin} disabled={loading}>
           {loading ? (
@@ -81,9 +77,11 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onNavigateRegister} style={styles.registerLink}>
-          <Text style={styles.registerText}>Don't have an account? <Text style={{ color: '#0ea5e9', fontWeight: '800' }}>Register Now</Text></Text>
-        </TouchableOpacity>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
+            🔒 Authorized Access Only: Only credentials created by Admin are permitted to sign in.
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -141,7 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: '#cbd5e1',
     borderRadius: 12,
     paddingHorizontal: 14,
     height: 50,
@@ -153,13 +151,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#0f172a',
     fontSize: 14,
-  },
-  forgotBtn: {
-    alignSelf: 'flex-end',
-  },
-  forgotText: {
-    color: '#0ea5e9',
-    fontSize: 13,
     fontWeight: '600',
   },
   submitBtn: {
@@ -177,12 +168,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
   },
-  registerLink: {
-    alignItems: 'center',
-    marginTop: 16,
+  infoBox: {
+    marginTop: 20,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(14, 165, 233, 0.2)',
   },
-  registerText: {
-    color: '#64748b',
-    fontSize: 13,
-  },
+  infoText: {
+    color: '#0284c7',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    fontWeight: '600',
 });
+
