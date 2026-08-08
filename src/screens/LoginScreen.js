@@ -68,11 +68,11 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
 
         <TouchableOpacity style={styles.submitBtn} onPress={handleLogin} disabled={loading}>
           {loading ? (
-            <ActivityIndicator color="#000" />
+            <ActivityIndicator color="#ffffff" />
           ) : (
             <>
               <Text style={styles.submitText}>Sign In to App</Text>
-              <ArrowRight size={18} color="#000" />
+              <ArrowRight size={18} color="#ffffff" />
             </>
           )}
         </TouchableOpacity>
