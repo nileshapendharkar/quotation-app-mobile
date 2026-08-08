@@ -111,6 +111,9 @@ export default function CartScreen({ onNavigateOrders }) {
                 </View>
 
                 <View style={styles.cardContent}>
+                  <Text style={styles.cardCategory} numberOfLines={1}>
+                    {item.categoryName} {item.subCategoryName ? `› ${item.subCategoryName}` : ''}
+                  </Text>
                   <Text style={styles.cardTitle} numberOfLines={2}>{item.productName}</Text>
                   
                   {item.size ? (
@@ -191,7 +194,14 @@ export default function CartScreen({ onNavigateOrders }) {
               <View style={styles.pdfItemsList}>
                 {generatedOrder.items.map((item, idx) => (
                   <View key={idx} style={styles.pdfItemRow}>
-                    <Text style={styles.pdfItemName}>{item.productName}</Text>
+                    <View style={{ flex: 1, paddingRight: 8 }}>
+                      <Text style={styles.pdfItemName}>{item.productName}</Text>
+                      {(item.categoryName || item.subCategoryName) && (
+                        <Text style={styles.pdfItemCategory}>
+                          {item.categoryName} {item.subCategoryName ? `› ${item.subCategoryName}` : ''}
+                        </Text>
+                      )}
+                    </View>
                     <Text style={styles.pdfItemQty}>{item.quantity} Units</Text>
                   </View>
                 ))}
@@ -286,11 +296,17 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 10,
   },
+  cardCategory: {
+    color: '#0ea5e9',
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
   cardTitle: {
     color: '#0f172a',
     fontSize: 12,
     fontWeight: '700',
-    height: 32,
+    height: 30,
   },
   policyLabel: {
     color: '#0ea5e9',
@@ -459,7 +475,11 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     fontSize: 13,
     fontWeight: '600',
-    flex: 1,
+  },
+  pdfItemCategory: {
+    color: '#64748b',
+    fontSize: 10,
+    marginTop: 2,
   },
   pdfItemQty: {
     color: '#0ea5e9',

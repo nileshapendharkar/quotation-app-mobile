@@ -227,6 +227,13 @@ function CartScreen(_ref) {
               { style: styles.cardContent },
               _react2['default'].createElement(
                 _reactNative.Text,
+                { style: styles.cardCategory, numberOfLines: 1 },
+                item.categoryName,
+                ' ',
+                item.subCategoryName ? '› ' + item.subCategoryName : ''
+              ),
+              _react2['default'].createElement(
+                _reactNative.Text,
                 { style: styles.cardTitle, numberOfLines: 2 },
                 item.productName
               ),
@@ -380,9 +387,20 @@ function CartScreen(_ref) {
                 _reactNative.View,
                 { key: idx, style: styles.pdfItemRow },
                 _react2['default'].createElement(
-                  _reactNative.Text,
-                  { style: styles.pdfItemName },
-                  item.productName
+                  _reactNative.View,
+                  { style: { flex: 1, paddingRight: 8 } },
+                  _react2['default'].createElement(
+                    _reactNative.Text,
+                    { style: styles.pdfItemName },
+                    item.productName
+                  ),
+                  (item.categoryName || item.subCategoryName) && _react2['default'].createElement(
+                    _reactNative.Text,
+                    { style: styles.pdfItemCategory },
+                    item.categoryName,
+                    ' ',
+                    item.subCategoryName ? '› ' + item.subCategoryName : ''
+                  )
                 ),
                 _react2['default'].createElement(
                   _reactNative.Text,
@@ -496,11 +514,17 @@ var styles = _reactNative.StyleSheet.create({
   cardContent: {
     padding: 10
   },
+  cardCategory: {
+    color: '#0ea5e9',
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 2
+  },
   cardTitle: {
     color: '#0f172a',
     fontSize: 12,
     fontWeight: '700',
-    height: 32
+    height: 30
   },
   policyLabel: {
     color: '#0ea5e9',
@@ -668,8 +692,12 @@ var styles = _reactNative.StyleSheet.create({
   pdfItemName: {
     color: '#0f172a',
     fontSize: 13,
-    fontWeight: '600',
-    flex: 1
+    fontWeight: '600'
+  },
+  pdfItemCategory: {
+    color: '#64748b',
+    fontSize: 10,
+    marginTop: 2
   },
   pdfItemQty: {
     color: '#0ea5e9',

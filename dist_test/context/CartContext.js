@@ -47,6 +47,8 @@ var CartProvider = function CartProvider(_ref) {
           productId: product.id || product.productId,
           productName: product.name || product.productName,
           image: product.image,
+          categoryName: product.categoryName || '',
+          subCategoryName: product.subCategoryName || product.subcategoryId || '',
           quantity: quantity,
           size: itemSize
         }]);

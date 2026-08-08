@@ -80,24 +80,64 @@ function HomeScreen(_ref) {
   var products = _useState72[0];
   var setProducts = _useState72[1];
 
-  var _useState8 = (0, _react.useState)('');
+  var _useState8 = (0, _react.useState)([]);
 
   var _useState82 = _slicedToArray(_useState8, 2);
 
-  var selectedCat = _useState82[0];
-  var setSelectedCat = _useState82[1];
+  var subCategories = _useState82[0];
+  var setSubCategories = _useState82[1];
 
   var _useState9 = (0, _react.useState)('');
 
   var _useState92 = _slicedToArray(_useState9, 2);
 
-  var search = _useState92[0];
-  var setSearch = _useState92[1];
+  var selectedCat = _useState92[0];
+  var setSelectedCat = _useState92[1];
+
+  var _useState10 = (0, _react.useState)('');
+
+  var _useState102 = _slicedToArray(_useState10, 2);
+
+  var selectedSubCat = _useState102[0];
+  var setSelectedSubCat = _useState102[1];
+
+  var _useState11 = (0, _react.useState)('');
+
+  var _useState112 = _slicedToArray(_useState11, 2);
+
+  var search = _useState112[0];
+  var setSearch = _useState112[1];
 
   (0, _react.useEffect)(function () {
     fetchBackendCategories();
+    fetchBackendSubCategories();
+  }, []);
+
+  (0, _react.useEffect)(function () {
     fetchBackendData();
-  }, [selectedCat, search]);
+  }, [selectedCat, selectedSubCat, search]);
+
+  var fetchBackendSubCategories = function fetchBackendSubCategories() {
+    var res;
+    return regeneratorRuntime.async(function fetchBackendSubCategories$(context$2$0) {
+      while (1) switch (context$2$0.prev = context$2$0.next) {
+        case 0:
+          context$2$0.next = 2;
+          return regeneratorRuntime.awrap((0, _api.apiRequest)('/subcategories'));
+
+        case 2:
+          res = context$2$0.sent;
+
+          if (res.success && res.subCategories) {
+            setSubCategories(res.subCategories);
+          }
+
+        case 4:
+        case 'end':
+          return context$2$0.stop();
+      }
+    }, null, _this);
+  };
 
   var fetchBackendCategories = function fetchBackendCategories() {
     var res;
@@ -129,19 +169,20 @@ function HomeScreen(_ref) {
           url = '/products?';
 
           if (selectedCat) url += 'categoryId=' + selectedCat + '&';
+          if (selectedSubCat) url += 'subcategoryId=' + selectedSubCat + '&';
           if (search) url += 'search=' + encodeURIComponent(search) + '&';
 
-          context$2$0.next = 5;
+          context$2$0.next = 6;
           return regeneratorRuntime.awrap((0, _api.apiRequest)(url));
 
-        case 5:
+        case 6:
           res = context$2$0.sent;
 
           if (res.success && res.products) {
             setProducts(res.products);
           }
 
-        case 7:
+        case 8:
         case 'end':
           return context$2$0.stop();
       }
@@ -150,9 +191,24 @@ function HomeScreen(_ref) {
 
   var filteredProducts = products.filter(function (p) {
     var matchesCat = !selectedCat || p.categoryId === selectedCat;
+    var matchesSubCat = !selectedSubCat || p.subcategoryId === selectedSubCat;
     var matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSearch;
+    return matchesCat && matchesSubCat && matchesSearch;
   });
+
+  var handleSelectCategory = function handleSelectCategory(catId) {
+    setSelectedCat(catId);
+    setSelectedSubCat('');
+  };
+
+  var handleSelectSubCategory = function handleSelectSubCategory(subCatId) {
+    setSelectedSubCat(subCatId);
+  };
+
+  var currentSubCats = subCategories.filter(function (sc) {
+    return sc.categoryId === selectedCat;
+  });
+  var showSubCategories = selectedCat && !selectedSubCat && !search && currentSubCats.length > 0;
 
   var handleOpenProductDetail = function handleOpenProductDetail(product) {
     setSelectedProduct(product);
@@ -231,7 +287,7 @@ function HomeScreen(_ref) {
         return _react2['default'].createElement(
           _reactNative.TouchableOpacity,
           { style: styles.groupCard, activeOpacity: 0.8, onPress: function () {
-              return setSelectedCat(item.id);
+              return handleSelectCategory(item.id);
             } },
           _react2['default'].createElement(
             _reactNative.View,
@@ -250,7 +306,7 @@ function HomeScreen(_ref) {
         );
       },
       contentContainerStyle: styles.gridContent
-    }) : _react2['default'].createElement(
+    }) : showSubCategories ? _react2['default'].createElement(
       _react2['default'].Fragment,
       null,
       _react2['default'].createElement(
@@ -267,7 +323,7 @@ function HomeScreen(_ref) {
                 key: cat.id || 'chip_' + index,
                 style: [styles.catChip, isSelected && styles.catChipActive],
                 onPress: function () {
-                  return setSelectedCat(cat.id);
+                  return handleSelectCategory(cat.id);
                 }
               },
               cat.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(cat.image) }, style: styles.catChipImg, resizeMode: 'contain' }) : null,
@@ -280,14 +336,124 @@ function HomeScreen(_ref) {
           })
         )
       ),
+      _react2['default'].createElement(
+        _reactNative.View,
+        { style: styles.sectionHeaderBox },
+        _react2['default'].createElement(
+          _reactNative.Text,
+          { style: styles.sectionHeaderText },
+          'Select Sub Category'
+        )
+      ),
+      _react2['default'].createElement(_reactNative.FlatList, {
+        data: currentSubCats,
+        keyExtractor: function (item, index) {
+          return item.id || 'subcat_' + index;
+        },
+        numColumns: 2,
+        renderItem: function (_ref3) {
+          var item = _ref3.item;
+          return _react2['default'].createElement(
+            _reactNative.TouchableOpacity,
+            { style: styles.groupCard, activeOpacity: 0.8, onPress: function () {
+                return handleSelectSubCategory(item.id);
+              } },
+            _react2['default'].createElement(
+              _reactNative.View,
+              { style: styles.groupImageContainer },
+              item.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(item.image) }, style: styles.groupImage, resizeMode: 'contain' }) : _react2['default'].createElement(_reactNative.View, { style: styles.groupImagePlaceholder })
+            ),
+            _react2['default'].createElement(
+              _reactNative.View,
+              { style: styles.groupTextContainer },
+              _react2['default'].createElement(
+                _reactNative.Text,
+                { style: styles.groupName, numberOfLines: 2 },
+                item.name
+              )
+            )
+          );
+        },
+        contentContainerStyle: styles.gridContent
+      })
+    ) : _react2['default'].createElement(
+      _react2['default'].Fragment,
+      null,
+      _react2['default'].createElement(
+        _reactNative.View,
+        { style: styles.categorySection },
+        _react2['default'].createElement(
+          _reactNative.ScrollView,
+          { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: styles.categoryScroll },
+          categories.map(function (cat, index) {
+            var isSelected = selectedCat === cat.id;
+            return _react2['default'].createElement(
+              _reactNative.TouchableOpacity,
+              {
+                key: cat.id || 'chip_' + index,
+                style: [styles.catChip, isSelected && styles.catChipActive],
+                onPress: function () {
+                  return handleSelectCategory(cat.id);
+                }
+              },
+              cat.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(cat.image) }, style: styles.catChipImg, resizeMode: 'contain' }) : null,
+              _react2['default'].createElement(
+                _reactNative.Text,
+                { style: [styles.catChipText, isSelected && styles.catChipTextActive] },
+                cat.name
+              )
+            );
+          })
+        )
+      ),
+      selectedCat && currentSubCats.length > 0 && !search && _react2['default'].createElement(
+        _reactNative.View,
+        { style: styles.subCategorySection },
+        _react2['default'].createElement(
+          _reactNative.ScrollView,
+          { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: styles.categoryScroll },
+          _react2['default'].createElement(
+            _reactNative.TouchableOpacity,
+            {
+              style: [styles.catChip, !selectedSubCat && styles.catChipActive],
+              onPress: function () {
+                return setSelectedSubCat('');
+              }
+            },
+            _react2['default'].createElement(
+              _reactNative.Text,
+              { style: [styles.catChipText, !selectedSubCat && styles.catChipTextActive] },
+              'All'
+            )
+          ),
+          currentSubCats.map(function (sub, index) {
+            var isSelSub = selectedSubCat === sub.id;
+            return _react2['default'].createElement(
+              _reactNative.TouchableOpacity,
+              {
+                key: sub.id || 'subchip_' + index,
+                style: [styles.catChip, isSelSub && styles.catChipActive],
+                onPress: function () {
+                  return handleSelectSubCategory(sub.id);
+                }
+              },
+              _react2['default'].createElement(
+                _reactNative.Text,
+                { style: [styles.catChipText, isSelSub && styles.catChipTextActive] },
+                sub.name
+              )
+            );
+          })
+        )
+      ),
       _react2['default'].createElement(_reactNative.FlatList, {
         data: filteredProducts,
         keyExtractor: function (item) {
           return item.id;
         },
         numColumns: 2,
-        renderItem: function (_ref3) {
-          var item = _ref3.item;
+        renderItem: function (_ref4) {
+          var item = _ref4.item;
           return _react2['default'].createElement(_componentsProductCard2['default'], { product: item, onSelect: handleOpenProductDetail });
         },
         contentContainerStyle: styles.gridContent,
@@ -626,6 +792,20 @@ var styles = _reactNative.StyleSheet.create({
     borderColor: '#e2e8f0',
     alignItems: 'center'
   },
+  sectionHeaderBox: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 8
+  },
+  sectionHeaderText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0f172a'
+  },
+  subCategorySection: {
+    marginBottom: 8,
+    marginTop: -4
+  },
   groupImageContainer: {
     width: '100%',
     height: 120,
@@ -815,4 +995,4 @@ var styles = _reactNative.StyleSheet.create({
   }
 });
 module.exports = exports['default'];
-/* Top Header */ /* Search Bar */ /* Main Content Area */ /* Category Slider */ /* Products Grid (2 per row) */ /* Product Detail & size selection modal */ /* Header */ /* Content */ /* Size Options Selection */ /* Quantity Counter */ /* Footer Add Button */
+/* Top Header */ /* Search Bar */ /* Main Content Area */ /* Category Slider for easy navigation back */ /* Category Slider */ /* Optional: Sub Category Slider if subcategories exist and one is selected */ /* Products Grid (2 per row) */ /* Product Detail & size selection modal */ /* Header */ /* Content */ /* Size Options Selection */ /* Quantity Counter */ /* Footer Add Button */
