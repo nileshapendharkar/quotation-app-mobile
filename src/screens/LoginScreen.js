@@ -70,10 +70,10 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
           {loading ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
-            <>
+            <React.Fragment>
               <Text style={styles.submitText}>Sign In to App</Text>
               <ArrowRight size={18} color="#ffffff" />
-            </>
+            </React.Fragment>
           )}
         </TouchableOpacity>
 
@@ -182,5 +182,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
     fontWeight: '600',
+  }
 });
 

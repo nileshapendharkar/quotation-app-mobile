@@ -92,10 +92,10 @@ export default function CompanyProfileScreen({ onNavigateBack }) {
           {loading ? (
             <ActivityIndicator color="#000" />
           ) : (
-            <>
+            <React.Fragment>
               <Save size={18} color="#fff" />
               <Text style={styles.saveText}>Save Profile Changes</Text>
-            </>
+            </React.Fragment>
           )}
         </TouchableOpacity>
       </View>
