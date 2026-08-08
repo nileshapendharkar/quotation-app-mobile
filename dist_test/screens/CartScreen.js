@@ -210,7 +210,7 @@ function CartScreen(_ref) {
             _react2['default'].createElement(
               _reactNative.View,
               { style: styles.imageContainer },
-              _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(item.image) }, style: styles.cardImage }),
+              _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(item.image), style: styles.cardImage }),
               _react2['default'].createElement(
                 _reactNative.TouchableOpacity,
                 {

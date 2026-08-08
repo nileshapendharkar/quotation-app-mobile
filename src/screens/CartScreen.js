@@ -101,7 +101,7 @@ export default function CartScreen({ onNavigateOrders }) {
             renderItem={({ item }) => (
               <View style={styles.cartCard}>
                 <View style={styles.imageContainer}>
-                  <Image source={{ uri: getImageUrl(item.image) }} style={styles.cardImage} />
+                  <Image source={getImageUrl(item.image)} style={styles.cardImage} />
                   <TouchableOpacity
                     style={styles.deleteBadge}
                     onPress={() => removeFromCart(item.productId, item.size)}

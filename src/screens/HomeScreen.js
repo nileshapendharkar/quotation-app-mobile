@@ -151,7 +151,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
             <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => handleSelectCategory(item.id)}>
               <View style={styles.groupImageContainer}>
                 {item.image ? (
-                  <Image source={{ uri: getImageUrl(item.image) }} style={styles.groupImage} resizeMode="contain" />
+                  <Image source={getImageUrl(item.image)} style={styles.groupImage} resizeMode="contain" />
                 ) : (
                   <View style={styles.groupImagePlaceholder} />
                 )}
@@ -177,7 +177,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
                     onPress={() => handleSelectCategory(cat.id)}
                   >
                     {cat.image ? (
-                      <Image source={{ uri: getImageUrl(cat.image) }} style={styles.catChipImg} resizeMode="contain" />
+                      <Image source={getImageUrl(cat.image)} style={styles.catChipImg} resizeMode="contain" />
                     ) : null}
                     <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
                       {cat.name}
@@ -200,7 +200,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
               <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => handleSelectSubCategory(item.id)}>
                 <View style={styles.groupImageContainer}>
                   {item.image ? (
-                    <Image source={{ uri: getImageUrl(item.image) }} style={styles.groupImage} resizeMode="contain" />
+                    <Image source={getImageUrl(item.image)} style={styles.groupImage} resizeMode="contain" />
                   ) : (
                     <View style={styles.groupImagePlaceholder} />
                   )}
@@ -227,7 +227,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
                     onPress={() => handleSelectCategory(cat.id)}
                   >
                     {cat.image ? (
-                      <Image source={{ uri: getImageUrl(cat.image) }} style={styles.catChipImg} resizeMode="contain" />
+                      <Image source={getImageUrl(cat.image)} style={styles.catChipImg} resizeMode="contain" />
                     ) : null}
                     <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
                       {cat.name}
@@ -321,7 +321,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
 
                 {/* Content */}
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
-                  <Image source={{ uri: getImageUrl(selectedProduct.image) }} style={styles.modalImage} resizeMode="contain" />
+                  <Image source={getImageUrl(selectedProduct.image)} style={styles.modalImage} resizeMode="contain" />
                   
                   <Text style={styles.modalSectionTitle}>Specifications</Text>
                   <Text style={styles.modalDescription}>

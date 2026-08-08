@@ -6,6 +6,8 @@ Object.defineProperty(exports, '__esModule', {
 
 var _this = this;
 
+var _utilsImageMapping = require('../utils/imageMapping');
+
 var API_BASE_URL = 'https://quotation-app-backend.onrender.com/api';
 
 var userToken = null;
@@ -16,10 +18,18 @@ var setAuthToken = function setAuthToken(token) {
 
 exports.setAuthToken = setAuthToken;
 var getImageUrl = function getImageUrl(path) {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
+  if (!path) return { uri: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80' };
+
+  if (path.startsWith('http')) {
+    return { uri: path };
+  }
+
+  if (_utilsImageMapping.productImages[path]) {
+    return _utilsImageMapping.productImages[path];
+  }
+
   var baseUrl = API_BASE_URL.replace('/api', '');
-  return '' + baseUrl + (path.startsWith('/') ? '' : '/') + path;
+  return { uri: '' + baseUrl + (path.startsWith('/') ? '' : '/') + path };
 };
 
 exports.getImageUrl = getImageUrl;

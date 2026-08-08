@@ -15,7 +15,7 @@ export default function ProductCard({ product, onSelect }) {
     <View style={styles.card}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect && onSelect(product)}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: getImageUrl(product.image) }} style={styles.image} resizeMode="cover" />
+          <Image source={getImageUrl(product.image)} style={styles.image} resizeMode="cover" />
           
           <TouchableOpacity 
             style={styles.heartButton}

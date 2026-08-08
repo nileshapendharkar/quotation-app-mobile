@@ -47,7 +47,7 @@ function ProductCard(_ref) {
       _react2['default'].createElement(
         _reactNative.View,
         { style: styles.imageContainer },
-        _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(product.image) }, style: styles.image, resizeMode: 'cover' }),
+        _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(product.image), style: styles.image, resizeMode: 'cover' }),
         _react2['default'].createElement(
           _reactNative.TouchableOpacity,
           {

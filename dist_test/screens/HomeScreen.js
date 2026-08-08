@@ -292,7 +292,7 @@ function HomeScreen(_ref) {
           _react2['default'].createElement(
             _reactNative.View,
             { style: styles.groupImageContainer },
-            item.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(item.image) }, style: styles.groupImage, resizeMode: 'contain' }) : _react2['default'].createElement(_reactNative.View, { style: styles.groupImagePlaceholder })
+            item.image ? _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(item.image), style: styles.groupImage, resizeMode: 'contain' }) : _react2['default'].createElement(_reactNative.View, { style: styles.groupImagePlaceholder })
           ),
           _react2['default'].createElement(
             _reactNative.View,
@@ -326,7 +326,7 @@ function HomeScreen(_ref) {
                   return handleSelectCategory(cat.id);
                 }
               },
-              cat.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(cat.image) }, style: styles.catChipImg, resizeMode: 'contain' }) : null,
+              cat.image ? _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(cat.image), style: styles.catChipImg, resizeMode: 'contain' }) : null,
               _react2['default'].createElement(
                 _reactNative.Text,
                 { style: [styles.catChipText, isSelected && styles.catChipTextActive] },
@@ -361,7 +361,7 @@ function HomeScreen(_ref) {
             _react2['default'].createElement(
               _reactNative.View,
               { style: styles.groupImageContainer },
-              item.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(item.image) }, style: styles.groupImage, resizeMode: 'contain' }) : _react2['default'].createElement(_reactNative.View, { style: styles.groupImagePlaceholder })
+              item.image ? _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(item.image), style: styles.groupImage, resizeMode: 'contain' }) : _react2['default'].createElement(_reactNative.View, { style: styles.groupImagePlaceholder })
             ),
             _react2['default'].createElement(
               _reactNative.View,
@@ -396,7 +396,7 @@ function HomeScreen(_ref) {
                   return handleSelectCategory(cat.id);
                 }
               },
-              cat.image ? _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(cat.image) }, style: styles.catChipImg, resizeMode: 'contain' }) : null,
+              cat.image ? _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(cat.image), style: styles.catChipImg, resizeMode: 'contain' }) : null,
               _react2['default'].createElement(
                 _reactNative.Text,
                 { style: [styles.catChipText, isSelected && styles.catChipTextActive] },
@@ -526,7 +526,7 @@ function HomeScreen(_ref) {
             _react2['default'].createElement(
               _reactNative.ScrollView,
               { showsVerticalScrollIndicator: false, style: styles.modalScroll },
-              _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(selectedProduct.image) }, style: styles.modalImage, resizeMode: 'contain' }),
+              _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(selectedProduct.image), style: styles.modalImage, resizeMode: 'contain' }),
               _react2['default'].createElement(
                 _reactNative.Text,
                 { style: styles.modalSectionTitle },

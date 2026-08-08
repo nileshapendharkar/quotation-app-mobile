@@ -32,7 +32,7 @@ export default function FavoriteScreen({ onNavigateHome }) {
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <View style={styles.favoriteCard}>
-              <Image source={{ uri: getImageUrl(item.image) }} style={styles.cardImage} />
+              <Image source={getImageUrl(item.image)} style={styles.cardImage} />
 
               <View style={styles.cardInfo}>
                 <Text style={styles.cardCategory}>{item.categoryName || 'Product Catalog'}</Text>

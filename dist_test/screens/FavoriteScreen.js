@@ -85,7 +85,7 @@ function FavoriteScreen(_ref) {
         return _react2['default'].createElement(
           _reactNative.View,
           { style: styles.favoriteCard },
-          _react2['default'].createElement(_reactNative.Image, { source: { uri: (0, _api.getImageUrl)(item.image) }, style: styles.cardImage }),
+          _react2['default'].createElement(_reactNative.Image, { source: (0, _api.getImageUrl)(item.image), style: styles.cardImage }),
           _react2['default'].createElement(
             _reactNative.View,
             { style: styles.cardInfo },
