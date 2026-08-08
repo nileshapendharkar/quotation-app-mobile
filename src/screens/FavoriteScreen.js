@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react
 import { Heart, Trash2, PlusCircle, ArrowLeft } from 'lucide-react-native';
 import { FavoriteContext } from '../context/FavoriteContext';
 import { CartContext } from '../context/CartContext';
+import { getImageUrl } from '../api';
 
 export default function FavoriteScreen({ onNavigateHome }) {
   const { favorites, toggleFavorite } = useContext(FavoriteContext);
@@ -31,7 +32,7 @@ export default function FavoriteScreen({ onNavigateHome }) {
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <View style={styles.favoriteCard}>
-              <Image source={{ uri: item.image }} style={styles.cardImage} />
+              <Image source={{ uri: getImageUrl(item.image) }} style={styles.cardImage} />
 
               <View style={styles.cardInfo}>
                 <Text style={styles.cardCategory}>{item.categoryName || 'Product Catalog'}</Text>

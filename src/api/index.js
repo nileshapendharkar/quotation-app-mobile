@@ -6,6 +6,13 @@ export const setAuthToken = (token) => {
   userToken = token;
 };
 
+export const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  const baseUrl = API_BASE_URL.replace('/api', '');
+  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 export const apiRequest = async (endpoint, method = 'GET', body = null) => {
   const headers = {
     'Content-Type': 'application/json',

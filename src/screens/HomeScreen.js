@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal } from 'react-native';
 import { Menu, Search, Filter, Shield, Plus, Minus, X, Check } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
-import { apiRequest } from '../api';
+import { apiRequest, getImageUrl } from '../api';
 import { CartContext } from '../context/CartContext';
 
 export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
@@ -114,44 +114,70 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
         </View>
       </View>
 
-      {/* Category Slider */}
-      <View style={styles.categorySection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-          {categories.map((cat) => {
-            const isSelected = selectedCat === cat.id;
-            return (
-              <TouchableOpacity
-                key={cat.id || 'all'}
-                style={[styles.catChip, isSelected && styles.catChipActive]}
-                onPress={() => setSelectedCat(cat.id)}
-              >
-                {cat.image ? (
-                  <Image source={{ uri: cat.image }} style={styles.catChipImg} resizeMode="contain" />
-                ) : null}
-                <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
-                  {cat.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Products Grid (2 per row) */}
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <ProductCard product={item} onSelect={handleOpenProductDetail} />
-        )}
-        contentContainerStyle={styles.gridContent}
-        ListEmptyComponent={
-          <View style={styles.emptyBox}>
-            <Text style={styles.emptyText}>No matching quotation products found.</Text>
+      {/* Main Content Area */}
+      {(!selectedCat && !search) ? (
+        <FlatList
+          data={categories.filter(c => c.id !== '')}
+          keyExtractor={(item, index) => item.id || `cat_${index}`}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => setSelectedCat(item.id)}>
+              <View style={styles.groupImageContainer}>
+                {item.image ? (
+                  <Image source={{ uri: getImageUrl(item.image) }} style={styles.groupImage} resizeMode="contain" />
+                ) : (
+                  <View style={styles.groupImagePlaceholder} />
+                )}
+              </View>
+              <View style={styles.groupTextContainer}>
+                <Text style={styles.groupName} numberOfLines={2}>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.gridContent}
+        />
+      ) : (
+        <React.Fragment>
+          {/* Category Slider */}
+          <View style={styles.categorySection}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+              {categories.map((cat, index) => {
+                const isSelected = selectedCat === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id || `chip_${index}`}
+                    style={[styles.catChip, isSelected && styles.catChipActive]}
+                    onPress={() => setSelectedCat(cat.id)}
+                  >
+                    {cat.image ? (
+                      <Image source={{ uri: getImageUrl(cat.image) }} style={styles.catChipImg} resizeMode="contain" />
+                    ) : null}
+                    <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
-        }
-      />
+
+          {/* Products Grid (2 per row) */}
+          <FlatList
+            data={filteredProducts}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            renderItem={({ item }) => (
+              <ProductCard product={item} onSelect={handleOpenProductDetail} />
+            )}
+            contentContainerStyle={styles.gridContent}
+            ListEmptyComponent={
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyText}>No matching quotation products found.</Text>
+              </View>
+            }
+          />
+        </React.Fragment>
+      )}
 
       {/* Product Detail & size selection modal */}
       <Modal
@@ -188,7 +214,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
 
                 {/* Content */}
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
-                  <Image source={{ uri: selectedProduct.image }} style={styles.modalImage} resizeMode="contain" />
+                  <Image source={{ uri: getImageUrl(selectedProduct.image) }} style={styles.modalImage} resizeMode="contain" />
                   
                   <Text style={styles.modalSectionTitle}>Specifications</Text>
                   <Text style={styles.modalDescription}>
@@ -386,6 +412,45 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#64748b',
     fontSize: 13,
+  },
+  groupCard: {
+    flex: 1,
+    margin: 6,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    alignItems: 'center',
+  },
+  groupImageContainer: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#f1f5f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  groupImage: {
+    width: '100%',
+    height: '100%',
+  },
+  groupImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#e2e8f0',
+  },
+  groupTextContainer: {
+    width: '100%',
+    padding: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  groupName: {
+    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,

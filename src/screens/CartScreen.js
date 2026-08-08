@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Modal, Alert
 import { ShoppingBag, Plus, Minus, Trash2, FileCheck, X, Share2, Download } from 'lucide-react-native';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
-import { apiRequest } from '../api';
+import { apiRequest, getImageUrl } from '../api';
 
 export default function CartScreen({ onNavigateOrders }) {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useContext(CartContext);
@@ -101,7 +101,7 @@ export default function CartScreen({ onNavigateOrders }) {
             renderItem={({ item }) => (
               <View style={styles.cartCard}>
                 <View style={styles.imageContainer}>
-                  <Image source={{ uri: item.image }} style={styles.cardImage} />
+                  <Image source={{ uri: getImageUrl(item.image) }} style={styles.cardImage} />
                   <TouchableOpacity
                     style={styles.deleteBadge}
                     onPress={() => removeFromCart(item.productId, item.size)}

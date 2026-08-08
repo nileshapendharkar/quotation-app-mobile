@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Heart, PlusCircle, Check } from 'lucide-react-native';
 import { FavoriteContext } from '../context/FavoriteContext';
 import { CartContext } from '../context/CartContext';
+import { getImageUrl } from '../api';
 
 export default function ProductCard({ product, onSelect }) {
   const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
@@ -14,7 +15,7 @@ export default function ProductCard({ product, onSelect }) {
     <View style={styles.card}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect && onSelect(product)}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: product.image }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: getImageUrl(product.image) }} style={styles.image} resizeMode="cover" />
           
           <TouchableOpacity 
             style={styles.heartButton}
