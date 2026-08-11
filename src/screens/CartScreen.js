@@ -97,20 +97,9 @@ export default function CartScreen({ onNavigateOrders }) {
           <FlatList
             data={cartItems}
             keyExtractor={(item) => item.productId + '_' + (item.size || '')}
-            numColumns={2}
             renderItem={({ item }) => (
-              <View style={styles.cartCard}>
-                <View style={styles.imageContainer}>
-                  <Image source={getImageUrl(item.image)} style={styles.cardImage} />
-                  <TouchableOpacity
-                    style={styles.deleteBadge}
-                    onPress={() => removeFromCart(item.productId, item.size)}
-                  >
-                    <Trash2 size={14} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-
-                <View style={styles.cardContent}>
+              <View style={styles.cartListItem}>
+                <View style={styles.itemInfo}>
                   <Text style={styles.cardCategory} numberOfLines={1}>
                     {item.categoryName} {item.subCategoryName ? `› ${item.subCategoryName}` : ''}
                   </Text>
@@ -121,16 +110,16 @@ export default function CartScreen({ onNavigateOrders }) {
                       <Text style={styles.sizeText}>Size: {item.size}</Text>
                     </View>
                   ) : null}
+                </View>
 
-                  <Text style={styles.policyLabel}>Quantity Based Quote</Text>
-
-                  {/* Quantity Stepper (Increase/Decrease) */}
+                <View style={styles.itemControls}>
+                  {/* Quantity Stepper */}
                   <View style={styles.qtyContainer}>
                     <TouchableOpacity
                       style={styles.qtyBtn}
                       onPress={() => updateQuantity(item.productId, -1, item.size)}
                     >
-                      <Minus size={14} color="#f8fafc" />
+                      <Minus size={14} color="#334155" />
                     </TouchableOpacity>
 
                     <Text style={styles.qtyValue}>{item.quantity}</Text>
@@ -139,13 +128,21 @@ export default function CartScreen({ onNavigateOrders }) {
                       style={styles.qtyBtn}
                       onPress={() => updateQuantity(item.productId, 1, item.size)}
                     >
-                      <Plus size={14} color="#f8fafc" />
+                      <Plus size={14} color="#334155" />
                     </TouchableOpacity>
                   </View>
+
+                  {/* Delete Button */}
+                  <TouchableOpacity
+                    style={styles.deleteBtn}
+                    onPress={() => removeFromCart(item.productId, item.size)}
+                  >
+                    <Trash2 size={18} color="#ef4444" />
+                  </TouchableOpacity>
                 </View>
               </View>
             )}
-            contentContainerStyle={styles.gridContent}
+            contentContainerStyle={styles.listContent}
           />
 
           {/* Bottom Action Buttons */}
@@ -263,57 +260,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-  gridContent: {
-    padding: 8,
+  listContent: {
+    padding: 16,
     paddingBottom: 90,
   },
-  cartCard: {
-    flex: 1,
-    margin: 6,
+  cartListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
-    borderRadius: 14,
-    overflow: 'hidden',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
+    shadowColor: '#64748b',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  imageContainer: {
-    height: 110,
-    backgroundColor: '#f1f5f9',
-    position: 'relative',
+  itemInfo: {
+    flex: 1,
+    paddingRight: 12,
   },
-  cardImage: {
-    width: '100%',
-    height: '100%',
+  itemControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  deleteBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    padding: 6,
-    borderRadius: 12,
+  deleteBtn: {
+    padding: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: 8,
   },
   cardContent: {
     padding: 10,
   },
   cardCategory: {
-    color: '#0ea5e9',
-    fontSize: 10,
-    fontWeight: '700',
-    marginBottom: 2,
+    color: '#64748b',
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   cardTitle: {
     color: '#0f172a',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
-    height: 30,
+    lineHeight: 20,
   },
-  policyLabel: {
-    color: '#0ea5e9',
-    fontSize: 10,
-    marginTop: 2,
-    marginBottom: 8,
-  },
+
   qtyContainer: {
     flexDirection: 'row',
     alignItems: 'center',
