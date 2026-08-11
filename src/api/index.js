@@ -11,12 +11,8 @@ import { productImages } from '../utils/imageMapping';
 export const getImageUrl = (path) => {
   if (!path) return { uri: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80' };
   
-  if (path.startsWith('http')) {
+  if (path.startsWith('http') || path.startsWith('data:')) {
     return { uri: path };
-  }
-  
-  if (productImages[path]) {
-    return productImages[path];
   }
   
   const baseUrl = API_BASE_URL.replace('/api', '');
