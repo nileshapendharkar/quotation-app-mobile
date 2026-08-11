@@ -4,6 +4,8 @@ import { ShoppingBag, Plus, Minus, Trash2, FileCheck, X, Share2, Download } from
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { apiRequest, getImageUrl } from '../api';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 export default function CartScreen({ onNavigateOrders }) {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useContext(CartContext);
@@ -74,6 +76,82 @@ export default function CartScreen({ onNavigateOrders }) {
       await Linking.openURL(url);
     } catch (err) {
       Alert.alert('Cannot Open WhatsApp', 'Please verify that WhatsApp is installed on your device.');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!generatedOrder) return;
+
+    try {
+      const itemsHtml = generatedOrder.items.map(item => `
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.productName}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.size || '-'}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">${item.quantity}</td>
+        </tr>
+      `).join('');
+
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #333; }
+              h1 { color: #0ea5e9; font-size: 24px; margin-bottom: 5px; }
+              p { margin: 5px 0; font-size: 14px; }
+              .header { margin-bottom: 30px; border-bottom: 2px solid #0ea5e9; padding-bottom: 10px; }
+              .details { margin-bottom: 30px; background-color: #f8fafc; padding: 15px; border-radius: 8px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th { background-color: #f1f5f9; padding: 12px 10px; text-align: left; font-size: 14px; color: #475569; }
+              .footer { margin-top: 50px; font-size: 12px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Gouri Aqua Plast</h1>
+              <p>Product Quotation Request</p>
+              <p><strong>Ref:</strong> ${generatedOrder.orderNo}</p>
+            </div>
+            
+            <div class="details">
+              <h3 style="margin-top:0; color:#475569;">Customer Details</h3>
+              <p><strong>Name:</strong> ${generatedOrder.userName}</p>
+              <p><strong>Company:</strong> ${generatedOrder.companyName || 'Individual'}</p>
+              <p><strong>Mobile:</strong> ${generatedOrder.userMobile}</p>
+              <p><strong>Email:</strong> ${generatedOrder.userEmail}</p>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th style="text-align: right;">Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+
+            <div class="footer">
+              <p>Thank you for choosing Gouri Aqua Plast.</p>
+              <p>Note: This is a zero-price quotation request. Our sales team will follow up with pricing.</p>
+            </div>
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      
+      const isSharingAvailable = await Sharing.isAvailableAsync();
+      if (isSharingAvailable) {
+        await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf', dialogTitle: 'Download Quotation PDF' });
+      } else {
+        Alert.alert('Sharing not available', 'Cannot download PDF on this device.');
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', 'Failed to generate PDF.');
     }
   };
 
@@ -212,11 +290,19 @@ export default function CartScreen({ onNavigateOrders }) {
 
               <View style={styles.pdfActions}>
                 <TouchableOpacity 
-                  style={styles.shareBtn}
+                  style={styles.actionBtn}
                   onPress={handleShareWhatsApp}
                 >
                   <Share2 size={16} color="#0ea5e9" />
-                  <Text style={styles.shareText}>Share via WhatsApp</Text>
+                  <Text style={styles.actionText}>WhatsApp</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.actionBtn}
+                  onPress={handleDownloadPDF}
+                >
+                  <Download size={16} color="#0ea5e9" />
+                  <Text style={styles.actionText}>Download PDF</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -226,7 +312,7 @@ export default function CartScreen({ onNavigateOrders }) {
                     onNavigateOrders && onNavigateOrders();
                   }}
                 >
-                  <Text style={styles.doneText}>View Orders</Text>
+                  <Text style={styles.doneText}>Orders</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -497,7 +583,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-  shareBtn: {
+  actionBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -508,9 +594,9 @@ const styles = StyleSheet.create({
     borderColor: '#0ea5e9',
     gap: 6,
   },
-  shareText: {
+  actionText: {
     color: '#0ea5e9',
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700',
   },
   doneBtn: {
