@@ -6,7 +6,7 @@ export const setAuthToken = (token) => {
   userToken = token;
 };
 
-import { productImages } from '../utils/imageMapping';
+
 
 export const getImageUrl = (path) => {
   if (!path) return { uri: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80' };
