@@ -14,21 +14,21 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
 
   const [categories, setCategories] = useState([
     { id: '', name: 'All Groups', image: null },
-    { id: 'cat_tanks', name: 'Water Storage Tanks', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/tank.png' },
-    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/cpvc.png' },
-    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/upvc.png' },
-    { id: 'cat_swr', name: 'SWR Drainage Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/SWR-Pipes.png' },
-    { id: 'cat_casing', name: 'UPVC CASING PIPES', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Casing-Pipe.png' },
+    { id: 'cat_tanks', name: 'Water Storage Tanks', image: '/images/categories/cat_tanks.png' },
+    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings', image: '/images/categories/cat_cpvc.png' },
+    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings', image: '/images/categories/cat_upvc.png' },
+    { id: 'cat_swr', name: 'SWR Drainage Pipes & Fittings', image: '/images/categories/cat_swr.png' },
+    { id: 'cat_casing', name: 'UPVC CASING PIPES', image: '/images/categories/cat_casing.png' },
     { id: 'cat_agri', name: 'Agriculture Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Agri-Pipes.png' },
-    { id: 'cat_hdpe', name: 'HDPE PIPE & FITTINGS', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/hdpe.png' },
-    { id: 'cat_sprinkler', name: 'Sprinkler Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/Sprinkler-Pipe.png' },
-    { id: 'cat_column', name: 'UPVC COLUMN PIPES', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Column-Pipes.png' },
+    { id: 'cat_hdpe', name: 'HDPE PIPE & FITTINGS', image: '/images/categories/cat_hdpe.jpg' },
+    { id: 'cat_sprinkler', name: 'Sprinkler Pipes & Fittings', image: '/images/categories/cat_sprinkler.png' },
+    { id: 'cat_column', name: 'UPVC COLUMN PIPES', image: '/images/categories/cat_column.png' },
     { id: 'cat_sanitary', name: 'Toilet Seat Cover & Flushing Cistern', image: 'https://www.ganeshgouriindustries.com/images/index/SANITARY-WARE.png' },
-    { id: 'cat_eco_drainage', name: 'Eco Drainage Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/Dranage-Pipe.png' },
-    { id: 'cat_garden', name: 'Garden, Braided & LDPE Pipes', image: 'https://www.ganeshgouriindustries.com/images/index/C.png' },
+    { id: 'cat_eco_drainage', name: 'Eco Drainage Pipes', image: '/images/categories/cat_eco_drainage.png' },
+    { id: 'cat_garden', name: 'Garden, Braided & LDPE Pipes', image: '/images/categories/cat_garden.png' },
     { id: 'cat_solvent', name: 'Solvent Cement & Lubricants', image: 'https://www.ganeshgouriindustries.com/assets/img/product/solvent-cement.webp' },
-    { id: 'cat_drip', name: 'DRIP IRRIGATION SYSTEM', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/drip.png' },
-    { id: 'cat_household', name: 'HOUSEHOLD PRODUCTS', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/household.png' },
+    { id: 'cat_drip', name: 'DRIP IRRIGATION SYSTEM', image: '/images/categories/cat_drip.jpg' },
+    { id: 'cat_household', name: 'HOUSEHOLD PRODUCTS', image: '/images/categories/cat_household.png' },
     { id: 'cat_faucets', name: 'FAUCETS', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/faucet.png' }
   ]);
 

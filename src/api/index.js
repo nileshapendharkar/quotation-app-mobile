@@ -1,3 +1,5 @@
+import { productImages } from '../utils/imageMapping';
+
 const API_BASE_URL = 'https://quotation-app-backend.onrender.com/api';
 
 let userToken = null;
@@ -13,6 +15,10 @@ export const getImageUrl = (path) => {
   
   if (path.startsWith('http') || path.startsWith('data:')) {
     return { uri: path };
+  }
+  
+  if (productImages && productImages[path]) {
+    return productImages[path];
   }
   
   const baseUrl = API_BASE_URL.replace('/api', '');
