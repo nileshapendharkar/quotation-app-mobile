@@ -5,8 +5,8 @@ import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
   const { login } = useContext(AuthContext);
-  const [userId, setUserId] = useState('9225087140');
-  const [password, setPassword] = useState('GGi#4321');
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
