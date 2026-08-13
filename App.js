@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, StyleSheet, SafeAreaView, StatusBar, BackHandler } from 'react-native';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { CartProvider } from './src/context/CartContext';
 import { FavoriteProvider } from './src/context/FavoriteContext';
@@ -25,6 +25,30 @@ function MainAppNavigator() {
   const [authScreen, setAuthScreen] = useState('Login'); // Login, Register, Forgot
   const [currentTab, setCurrentTab] = useState('Home'); // Home, Favorite, Cart, Orders, CompanyProfile, ChangePassword
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (!user) {
+        if (authScreen !== 'Login') {
+          setAuthScreen('Login');
+          return true;
+        }
+        return false;
+      }
+      if (sideMenuVisible) {
+        setSideMenuVisible(false);
+        return true;
+      }
+      if (currentTab !== 'Home') {
+        setCurrentTab('Home');
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backHandler.remove();
+  }, [user, authScreen, sideMenuVisible, currentTab]);
 
   if (!user) {
     return (
@@ -104,19 +128,35 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <CartProvider>
-        <FavoriteProvider>
-          <View style={{ flex: 1 }}>
-            <MainAppNavigator />
-            {showLaunch && (
-              <LaunchAnimation onFinish={() => setShowLaunch(false)} />
-            )}
-          </View>
-        </FavoriteProvider>
-      </CartProvider>
+      <AppContent showLaunch={showLaunch} setShowLaunch={setShowLaunch} />
     </AuthProvider>
   );
 }
+
+const AppContent = ({ showLaunch, setShowLaunch }) => {
+  const { loading } = useContext(AuthContext);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      </View>
+    );
+  }
+
+  return (
+    <CartProvider>
+      <FavoriteProvider>
+        <View style={{ flex: 1 }}>
+          <MainAppNavigator />
+          {showLaunch && (
+            <LaunchAnimation onFinish={() => setShowLaunch(false)} />
+          )}
+        </View>
+      </FavoriteProvider>
+    </CartProvider>
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: {

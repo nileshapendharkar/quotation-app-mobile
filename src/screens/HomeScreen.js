@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal, BackHandler } from 'react-native';
 import { Menu, Search, Filter, Shield, Plus, Minus, X, Check } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import { apiRequest, getImageUrl } from '../api';
@@ -35,17 +35,44 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
   const [products, setProducts] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedCat, setSelectedCat] = useState('');
+  const [selectedSubCat, setSelectedSubCat] = useState('');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchBackendCategories();
+    fetchBackendSubCategories();
   }, []);
 
   useEffect(() => {
     fetchBackendData();
-  }, [selectedCat, search]);
+  }, [selectedCat, selectedSubCat, search]);
 
+  useEffect(() => {
+    const onBackPress = () => {
+      if (selectedProduct) {
+        setSelectedProduct(null);
+        return true;
+      }
+      if (selectedSubCat) {
+        setSelectedSubCat('');
+        return true;
+      }
+      if (selectedCat) {
+        setSelectedCat('');
+        return true;
+      }
+      return false;
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backHandler.remove();
+  }, [selectedProduct, selectedSubCat, selectedCat]);
 
+  const fetchBackendSubCategories = async () => {
+    const res = await apiRequest('/subcategories');
+    if (res.success && res.subCategories) {
+      setSubCategories(res.subCategories);
+    }
+  };
 
   const fetchBackendCategories = async () => {
     const res = await apiRequest('/categories');
@@ -57,6 +84,7 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
   const fetchBackendData = async () => {
     let url = '/products?';
     if (selectedCat) url += `categoryId=${selectedCat}&`;
+    if (selectedSubCat) url += `subcategoryId=${selectedSubCat}&`;
     if (search) url += `search=${encodeURIComponent(search)}&`;
 
     const res = await apiRequest(url);
@@ -67,13 +95,22 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
 
   const filteredProducts = products.filter(p => {
     const matchesCat = !selectedCat || p.categoryId === selectedCat;
+    const matchesSubCat = !selectedSubCat || p.subcategoryId === selectedSubCat;
     const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSearch;
+    return matchesCat && matchesSubCat && matchesSearch;
   });
 
   const handleSelectCategory = (catId) => {
     setSelectedCat(catId);
+    setSelectedSubCat('');
   };
+
+  const handleSelectSubCategory = (subCatId) => {
+    setSelectedSubCat(subCatId);
+  };
+
+  const currentSubCats = subCategories.filter(sc => sc.categoryId === selectedCat);
+  const showSubCategories = selectedCat && !selectedSubCat && !search && currentSubCats.length > 0;
 
   const handleOpenProductDetail = (product) => {
     setSelectedProduct(product);
@@ -146,6 +183,56 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
           )}
           contentContainerStyle={styles.gridContent}
         />
+      ) : showSubCategories ? (
+        <React.Fragment>
+          {/* Category Slider for easy navigation back */}
+          <View style={styles.categorySection}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+              {categories.map((cat, index) => {
+                const isSelected = selectedCat === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id || `chip_${index}`}
+                    style={[styles.catChip, isSelected && styles.catChipActive]}
+                    onPress={() => handleSelectCategory(cat.id)}
+                  >
+                    {cat.image ? (
+                      <Image source={getImageUrl(cat.image)} style={styles.catChipImg} resizeMode="contain" />
+                    ) : null}
+                    <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          <View style={styles.sectionHeaderBox}>
+            <Text style={styles.sectionHeaderText}>Select Sub Category</Text>
+          </View>
+
+          <FlatList
+            data={currentSubCats}
+            keyExtractor={(item, index) => item.id || `subcat_${index}`}
+            numColumns={2}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => handleSelectSubCategory(item.id)}>
+                <View style={styles.groupImageContainer}>
+                  {item.image ? (
+                    <Image source={getImageUrl(item.image)} style={styles.groupImage} resizeMode="contain" />
+                  ) : (
+                    <View style={styles.groupImagePlaceholder} />
+                  )}
+                </View>
+                <View style={styles.groupTextContainer}>
+                  <Text style={styles.groupName} numberOfLines={2}>{item.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            contentContainerStyle={styles.gridContent}
+          />
+        </React.Fragment>
       ) : (
         <React.Fragment>
           {/* Category Slider */}
@@ -171,7 +258,35 @@ export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
             </ScrollView>
           </View>
 
-
+          {/* Optional: Sub Category Slider if subcategories exist and one is selected */}
+          {selectedCat && currentSubCats.length > 0 && !search && (
+            <View style={styles.subCategorySection}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+                <TouchableOpacity
+                  style={[styles.catChip, !selectedSubCat && styles.catChipActive]}
+                  onPress={() => setSelectedSubCat('')}
+                >
+                  <Text style={[styles.catChipText, !selectedSubCat && styles.catChipTextActive]}>
+                    All
+                  </Text>
+                </TouchableOpacity>
+                {currentSubCats.map((sub, index) => {
+                  const isSelSub = selectedSubCat === sub.id;
+                  return (
+                    <TouchableOpacity
+                      key={sub.id || `subchip_${index}`}
+                      style={[styles.catChip, isSelSub && styles.catChipActive]}
+                      onPress={() => handleSelectSubCategory(sub.id)}
+                    >
+                      <Text style={[styles.catChipText, isSelSub && styles.catChipTextActive]}>
+                        {sub.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
 
           {/* Products Grid (2 per row) */}
           <FlatList
