@@ -385,6 +385,18 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct }) {
                     </View>
                   )}
 
+                  {/* Pack Size Display */}
+                  {(selectedProduct.packSize || (selectedProduct.packSizes && selectedProduct.packSizes[selectedSize])) && (
+                    <View style={{ marginBottom: 16 }}>
+                      <Text style={styles.modalSectionTitle}>Standard Pack Size</Text>
+                      <View style={{ backgroundColor: '#f1f5f9', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#e2e8f0' }}>
+                        <Text style={{ fontSize: 13, color: '#0ea5e9', fontWeight: '700' }}>
+                          📦 {selectedProduct.packSizes && selectedProduct.packSizes[selectedSize] ? selectedProduct.packSizes[selectedSize] : selectedProduct.packSize} Units / Pack
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+
                   {/* Quantity Counter */}
                   <View style={styles.qtySection}>
                     <Text style={styles.modalSectionTitle}>Configure Quantity</Text>
