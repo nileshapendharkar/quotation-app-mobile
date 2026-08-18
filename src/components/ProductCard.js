@@ -15,7 +15,7 @@ export default function ProductCard({ product, onSelect }) {
     <View style={styles.card}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect && onSelect(product)}>
         <View style={styles.imageContainer}>
-          <Image source={getImageUrl(product.image)} style={styles.image} resizeMode="cover" />
+          <Image source={getImageUrl(product.image)} style={styles.image} resizeMode="contain" />
           
           <TouchableOpacity 
             style={styles.heartButton}
@@ -35,13 +35,10 @@ export default function ProductCard({ product, onSelect }) {
           <Text style={styles.title} numberOfLines={2}>{product.name}</Text>
           <Text style={styles.policyTag}>Zero Price • Quotation Only</Text>
 
-          <TouchableOpacity 
-            style={styles.addButton}
-            onPress={() => onSelect && onSelect(product)}
-          >
+          <View style={styles.addButton}>
             <PlusCircle size={16} color="#ffffff" />
-            <Text style={styles.addButtonText}>Select Size & Qty</Text>
-          </TouchableOpacity>
+            <Text style={styles.addButtonText}>Configure Qty</Text>
+          </View>
         </View>
       </TouchableOpacity>
     </View>
@@ -91,6 +88,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 12,
+    flex: 1,
+    justifyContent: 'space-between',
   },
   title: {
     color: '#0f172a',
@@ -98,6 +97,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 18,
     marginBottom: 4,
+    minHeight: 36, // Ensures 2 lines of text height for perfect alignment
   },
   policyTag: {
     color: '#0ea5e9',
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    marginTop: 'auto',
   },
   addButtonText: {
     color: '#ffffff',

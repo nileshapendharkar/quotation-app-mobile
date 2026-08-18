@@ -1,5 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar, BackHandler } from 'react-native';
+import { View, StyleSheet, SafeAreaView, StatusBar, BackHandler, LayoutAnimation, Platform, UIManager } from 'react-native';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { CartProvider } from './src/context/CartContext';
 import { FavoriteProvider } from './src/context/FavoriteContext';
@@ -9,11 +13,13 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 import HomeScreen from './src/screens/HomeScreen';
+import ProductScreen from './src/screens/ProductScreen';
 import FavoriteScreen from './src/screens/FavoriteScreen';
 import CartScreen from './src/screens/CartScreen';
 import OrdersScreen from './src/screens/OrdersScreen';
 import CompanyProfileScreen from './src/screens/CompanyProfileScreen';
 import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
 
 import BottomTabBar from './src/components/BottomTabBar';
 import SideMenuModal from './src/components/SideMenuModal';
@@ -26,11 +32,21 @@ function MainAppNavigator() {
   const [currentTab, setCurrentTab] = useState('Home'); // Home, Favorite, Cart, Orders, CompanyProfile, ChangePassword
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
 
+  const changeAuthScreen = (screen) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setAuthScreen(screen);
+  };
+
+  const changeTab = (tab) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCurrentTab(tab);
+  };
+
   useEffect(() => {
     const onBackPress = () => {
       if (!user) {
         if (authScreen !== 'Login') {
-          setAuthScreen('Login');
+          changeAuthScreen('Login');
           return true;
         }
         return false;
@@ -40,7 +56,7 @@ function MainAppNavigator() {
         return true;
       }
       if (currentTab !== 'Home') {
-        setCurrentTab('Home');
+        changeTab('Home');
         return true;
       }
       return false;
@@ -56,18 +72,18 @@ function MainAppNavigator() {
         <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
         {authScreen === 'Login' && (
           <LoginScreen
-            onNavigateRegister={() => setAuthScreen('Register')}
-            onNavigateForgot={() => setAuthScreen('Forgot')}
+            onNavigateRegister={() => changeAuthScreen('Register')}
+            onNavigateForgot={() => changeAuthScreen('Forgot')}
           />
         )}
         {authScreen === 'Register' && (
           <RegisterScreen
-            onNavigateLogin={() => setAuthScreen('Login')}
+            onNavigateLogin={() => changeAuthScreen('Login')}
           />
         )}
         {authScreen === 'Forgot' && (
           <ForgotPasswordScreen
-            onNavigateLogin={() => setAuthScreen('Login')}
+            onNavigateLogin={() => changeAuthScreen('Login')}
           />
         )}
       </View>
@@ -80,25 +96,36 @@ function MainAppNavigator() {
         return (
           <HomeScreen
             onOpenMenu={() => setSideMenuVisible(true)}
-            onSelectProduct={(p) => setCurrentTab('Cart')}
+            onNavigateProduct={() => changeTab('Product')}
+            onNavigateOrders={() => changeTab('Orders')}
+            onNavigateNotifications={() => changeTab('Notifications')}
+          />
+        );
+      case 'Product':
+        return (
+          <ProductScreen
+            onOpenMenu={() => setSideMenuVisible(true)}
+            onSelectProduct={(p) => changeTab('Cart')}
           />
         );
       case 'Favorite':
-        return <FavoriteScreen onNavigateHome={() => setCurrentTab('Home')} />;
+        return <FavoriteScreen onNavigateHome={() => changeTab('Home')} />;
       case 'Cart':
-        return <CartScreen onNavigateOrders={() => setCurrentTab('Orders')} />;
+        return <CartScreen onNavigateOrders={() => changeTab('Orders')} />;
       case 'Orders':
         return <OrdersScreen />;
+      case 'Notifications':
+        return <NotificationsScreen onNavigateBack={() => changeTab('Home')} />;
       case 'CompanyProfile':
-        return <CompanyProfileScreen onNavigateBack={() => setCurrentTab('Home')} />;
+        return <CompanyProfileScreen onNavigateBack={() => changeTab('Home')} />;
       case 'ChangePassword':
-        return <ChangePasswordScreen onNavigateBack={() => setCurrentTab('Home')} />;
+        return <ChangePasswordScreen onNavigateBack={() => changeTab('Home')} />;
       default:
         return <HomeScreen onOpenMenu={() => setSideMenuVisible(true)} />;
     }
   };
 
-  const showBottomBar = ['Home', 'Favorite', 'Cart', 'Orders'].includes(currentTab);
+  const showBottomBar = ['Home', 'Product', 'Favorite', 'Cart', 'Orders'].includes(currentTab);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -110,14 +137,14 @@ function MainAppNavigator() {
       {showBottomBar && (
         <BottomTabBar
           activeTab={currentTab}
-          onTabChange={(tab) => setCurrentTab(tab)}
+          onTabChange={(tab) => changeTab(tab)}
         />
       )}
 
       <SideMenuModal
         visible={sideMenuVisible}
         onClose={() => setSideMenuVisible(false)}
-        onNavigate={(target) => setCurrentTab(target)}
+        onNavigate={(target) => changeTab(target)}
       />
     </SafeAreaView>
   );

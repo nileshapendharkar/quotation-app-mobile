@@ -1,754 +1,490 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal, BackHandler } from 'react-native';
-import { Menu, Search, Filter, Shield, Plus, Minus, X, Check } from 'lucide-react-native';
-import ProductCard from '../components/ProductCard';
-import { apiRequest, getImageUrl } from '../api';
-import { CartContext } from '../context/CartContext';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { Menu, Bell, Plus, FileText, FileEdit, Send, FileX, ChevronRight, Info, HelpCircle, PhoneCall } from 'lucide-react-native';
+import { AuthContext } from '../context/AuthContext';
 
-export default function HomeScreen({ onOpenMenu, onSelectProduct }) {
-  const { addToCart } = useContext(CartContext);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [qty, setQty] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [successMsg, setSuccessMsg] = useState(false);
+export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOrders, onNavigateNotifications }) {
+  const { user } = useContext(AuthContext);
 
-  const [categories, setCategories] = useState([
-    { id: '', name: 'All Groups', image: null },
-    { id: 'cat_tanks', name: 'Water Storage Tanks', image: '/images/categories/cat_tanks.png' },
-    { id: 'cat_cpvc', name: 'CPVC Pipes & Fittings', image: '/images/categories/cat_cpvc.png' },
-    { id: 'cat_upvc', name: 'UPVC Pipes & Fittings', image: '/images/categories/cat_upvc.png' },
-    { id: 'cat_swr', name: 'SWR Drainage Pipes & Fittings', image: '/images/categories/cat_swr.png' },
-    { id: 'cat_casing', name: 'UPVC CASING PIPES', image: '/images/categories/cat_casing.png' },
-    { id: 'cat_agri', name: 'Agriculture Pipes & Fittings', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/Agri-Pipes.png' },
-    { id: 'cat_hdpe', name: 'HDPE PIPE & FITTINGS', image: '/images/categories/cat_hdpe.png' },
-    { id: 'cat_sprinkler', name: 'Sprinkler Pipes & Fittings', image: '/images/categories/cat_sprinkler.png' },
-    { id: 'cat_column', name: 'UPVC COLUMN PIPES', image: '/images/categories/cat_column.png' },
-    { id: 'cat_sanitary', name: 'Toilet Seat Cover & Flushing Cistern', image: 'https://www.ganeshgouriindustries.com/images/index/SANITARY-WARE.png' },
-    { id: 'cat_eco_drainage', name: 'Eco Drainage Pipes', image: '/images/categories/cat_eco_drainage.png' },
-    { id: 'cat_garden', name: 'Garden, Braided & LDPE Pipes', image: '/images/categories/cat_garden.png' },
-    { id: 'cat_solvent', name: 'Solvent Cement & Lubricants', image: 'https://www.ganeshgouriindustries.com/assets/img/product/solvent-cement.webp' },
-    { id: 'cat_drip', name: 'DRIP IRRIGATION SYSTEM', image: '/images/categories/cat_drip.png' },
-    { id: 'cat_household', name: 'HOUSEHOLD PRODUCTS', image: '/images/categories/cat_household.png' },
-    { id: 'cat_faucets', name: 'FAUCETS', image: 'https://www.ganeshgouriindustries.com/images/index/new-product/faucet.png' }
-  ]);
+  const stats = [
+    { title: 'Total Quotations', count: '0', icon: FileText, color: '#3b82f6', bgColor: '#eff6ff' },
+    { title: 'Draft', count: '0', icon: FileEdit, color: '#22c55e', bgColor: '#f0fdf4' },
+    { title: 'Submitted', count: '0', icon: Send, color: '#f59e0b', bgColor: '#fffbeb' },
+    { title: 'Declined', count: '0', icon: FileX, color: '#a855f7', bgColor: '#faf5ff' },
+  ];
 
-  const [products, setProducts] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
-  const [selectedCat, setSelectedCat] = useState('');
-  const [selectedSubCat, setSelectedSubCat] = useState('');
-  const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    fetchBackendCategories();
-    fetchBackendSubCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchBackendData();
-  }, [selectedCat, selectedSubCat, search]);
-
-  useEffect(() => {
-    const onBackPress = () => {
-      if (selectedProduct) {
-        setSelectedProduct(null);
-        return true;
-      }
-      if (selectedSubCat) {
-        setSelectedSubCat('');
-        return true;
-      }
-      if (selectedCat) {
-        setSelectedCat('');
-        return true;
-      }
-      return false;
-    };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => backHandler.remove();
-  }, [selectedProduct, selectedSubCat, selectedCat]);
-
-  const fetchBackendSubCategories = async () => {
-    const res = await apiRequest('/subcategories');
-    if (res.success && res.subCategories) {
-      setSubCategories(res.subCategories);
-    }
-  };
-
-  const fetchBackendCategories = async () => {
-    const res = await apiRequest('/categories');
-    if (res.success && res.categories && res.categories.length > 0) {
-      setCategories([{ id: '', name: 'All Groups', image: null }, ...res.categories]);
-    }
-  };
-
-  const fetchBackendData = async () => {
-    let url = '/products?';
-    if (selectedCat) url += `categoryId=${selectedCat}&`;
-    if (selectedSubCat) url += `subcategoryId=${selectedSubCat}&`;
-    if (search) url += `search=${encodeURIComponent(search)}&`;
-
-    const res = await apiRequest(url);
-    if (res.success && res.products) {
-      setProducts(res.products);
-    }
-  };
-
-  const filteredProducts = products.filter(p => {
-    const matchesCat = !selectedCat || p.categoryId === selectedCat;
-    const matchesSubCat = !selectedSubCat || p.subcategoryId === selectedSubCat;
-    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSubCat && matchesSearch;
-  });
-
-  const handleSelectCategory = (catId) => {
-    setSelectedCat(catId);
-    setSelectedSubCat('');
-  };
-
-  const handleSelectSubCategory = (subCatId) => {
-    setSelectedSubCat(subCatId);
-  };
-
-  const currentSubCats = subCategories.filter(sc => sc.categoryId === selectedCat);
-  const showSubCategories = selectedCat && !selectedSubCat && !search && currentSubCats.length > 0;
-
-  const handleOpenProductDetail = (product) => {
-    setSelectedProduct(product);
-    setQty(1);
-    setSelectedSize(product.sizes && product.sizes.length > 0 ? product.sizes[0] : '');
-    setSuccessMsg(false);
-  };
-
-  const handleConfirmAddToCart = () => {
-    if (!selectedProduct) return;
-    addToCart(selectedProduct, qty, selectedSize);
-    setSuccessMsg(true);
-    setTimeout(() => {
-      setSelectedProduct(null);
-      setSuccessMsg(false);
-    }, 1200);
-  };
+  const recentOrders = [];
+  const unreadNotifications = 0;
 
   return (
-    <View style={styles.container}>
-      {/* Top Header */}
-      <View style={styles.topHeader}>
-        <TouchableOpacity onPress={onOpenMenu} style={styles.menuBtn}>
-          <Menu size={22} color="#0f172a" />
+    <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onOpenMenu} style={styles.headerIconBtn}>
+          <Menu color="#0f172a" size={24} />
         </TouchableOpacity>
-
-        <View style={styles.titleBox}>
-          <Text style={styles.headerTitle}>Gouri Aqua Plast</Text>
-          <Text style={styles.headerSub}>Tanks, Pipes & Fittings Catalog</Text>
-        </View>
-
-        <View style={styles.policyBadge}>
-          <Shield size={14} color="#0ea5e9" />
-        </View>
-      </View>
-
-      {/* Search Bar */}
-      <View style={styles.searchSection}>
-        <View style={styles.searchContainer}>
-          <Search size={18} color="#64748b" style={{ marginRight: 8 }} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search product name or model..."
-            placeholderTextColor="#64748b"
-            value={search}
-            onChangeText={setSearch}
-          />
-        </View>
-      </View>
-
-      {/* Main Content Area */}
-      {(!selectedCat && !search) ? (
-        <FlatList
-          data={categories.filter(c => c.id !== '')}
-          keyExtractor={(item, index) => item.id || `cat_${index}`}
-          numColumns={2}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => handleSelectCategory(item.id)}>
-              <View style={styles.groupImageContainer}>
-                {item.image ? (
-                  <Image source={getImageUrl(item.image)} style={styles.groupImage} resizeMode="contain" />
-                ) : (
-                  <View style={styles.groupImagePlaceholder} />
-                )}
-              </View>
-              <View style={styles.groupTextContainer}>
-                <Text style={styles.groupName} numberOfLines={2}>{item.name}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          contentContainerStyle={styles.gridContent}
-        />
-      ) : showSubCategories ? (
-        <React.Fragment>
-          {/* Category Slider for easy navigation back */}
-          <View style={styles.categorySection}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-              {categories.map((cat, index) => {
-                const isSelected = selectedCat === cat.id;
-                return (
-                  <TouchableOpacity
-                    key={cat.id || `chip_${index}`}
-                    style={[styles.catChip, isSelected && styles.catChipActive]}
-                    onPress={() => handleSelectCategory(cat.id)}
-                  >
-                    {cat.image ? (
-                      <Image source={getImageUrl(cat.image)} style={styles.catChipImg} resizeMode="contain" />
-                    ) : null}
-                    <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
-                      {cat.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          <View style={styles.sectionHeaderBox}>
-            <Text style={styles.sectionHeaderText}>Select Sub Category</Text>
-          </View>
-
-          <FlatList
-            data={currentSubCats}
-            keyExtractor={(item, index) => item.id || `subcat_${index}`}
-            numColumns={2}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.groupCard} activeOpacity={0.8} onPress={() => handleSelectSubCategory(item.id)}>
-                <View style={styles.groupImageContainer}>
-                  {item.image ? (
-                    <Image source={getImageUrl(item.image)} style={styles.groupImage} resizeMode="contain" />
-                  ) : (
-                    <View style={styles.groupImagePlaceholder} />
-                  )}
-                </View>
-                <View style={styles.groupTextContainer}>
-                  <Text style={styles.groupName} numberOfLines={2}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            contentContainerStyle={styles.gridContent}
-          />
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          {/* Category Slider */}
-          <View style={styles.categorySection}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-              {categories.map((cat, index) => {
-                const isSelected = selectedCat === cat.id;
-                return (
-                  <TouchableOpacity
-                    key={cat.id || `chip_${index}`}
-                    style={[styles.catChip, isSelected && styles.catChipActive]}
-                    onPress={() => handleSelectCategory(cat.id)}
-                  >
-                    {cat.image ? (
-                      <Image source={getImageUrl(cat.image)} style={styles.catChipImg} resizeMode="contain" />
-                    ) : null}
-                    <Text style={[styles.catChipText, isSelected && styles.catChipTextActive]}>
-                      {cat.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          {/* Optional: Sub Category Slider if subcategories exist and one is selected */}
-          {selectedCat && currentSubCats.length > 0 && !search && (
-            <View style={styles.subCategorySection}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-                <TouchableOpacity
-                  style={[styles.catChip, !selectedSubCat && styles.catChipActive]}
-                  onPress={() => setSelectedSubCat('')}
-                >
-                  <Text style={[styles.catChipText, !selectedSubCat && styles.catChipTextActive]}>
-                    All
-                  </Text>
-                </TouchableOpacity>
-                {currentSubCats.map((sub, index) => {
-                  const isSelSub = selectedSubCat === sub.id;
-                  return (
-                    <TouchableOpacity
-                      key={sub.id || `subchip_${index}`}
-                      style={[styles.catChip, isSelSub && styles.catChipActive]}
-                      onPress={() => handleSelectSubCategory(sub.id)}
-                    >
-                      <Text style={[styles.catChipText, isSelSub && styles.catChipTextActive]}>
-                        {sub.name}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
+        <Text style={styles.headerTitle}>Quotation App</Text>
+        <TouchableOpacity style={styles.headerIconBtn} onPress={onNavigateNotifications}>
+          <Bell color="#0f172a" size={24} />
+          {unreadNotifications > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{unreadNotifications}</Text>
             </View>
           )}
-
-          {/* Products Grid (2 per row) */}
-          <FlatList
-            data={filteredProducts}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            renderItem={({ item }) => (
-              <ProductCard product={item} onSelect={handleOpenProductDetail} />
-            )}
-            contentContainerStyle={styles.gridContent}
-            ListEmptyComponent={
-              <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>No matching quotation products found.</Text>
-              </View>
-            }
-          />
-        </React.Fragment>
-      )}
-
-      {/* Product Detail & size selection modal */}
-      <Modal
-        visible={!!selectedProduct}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => !successMsg && setSelectedProduct(null)}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          activeOpacity={1} 
-          onPress={() => !successMsg && setSelectedProduct(null)}
-        >
-          <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
-            {selectedProduct && (
-              <View style={{ width: '100%' }}>
-                {/* Header */}
-                <View style={styles.modalHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.modalProductTitle} numberOfLines={1}>
-                      {selectedProduct.name}
-                    </Text>
-                    <Text style={styles.modalCategoryTitle}>
-                      {selectedProduct.categoryName || 'Catalog Item'}
-                    </Text>
-                  </View>
-                  <TouchableOpacity 
-                    style={styles.closeModalBtn} 
-                    onPress={() => !successMsg && setSelectedProduct(null)}
-                  >
-                    <X size={20} color="#64748b" />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Content */}
-                <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
-                  <Image source={getImageUrl(selectedProduct.image)} style={styles.modalImage} resizeMode="contain" />
-                  
-                  <Text style={styles.modalSectionTitle}>Specifications</Text>
-                  <Text style={styles.modalDescription}>
-                    {selectedProduct.description || 'No description available for this item.'}
-                  </Text>
-
-                  {/* Size Options Selection */}
-                  {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
-                    <View style={styles.sizesSection}>
-                      <Text style={styles.modalSectionTitle}>Select Size Option</Text>
-                      <View style={styles.sizeChipsRow}>
-                        {selectedProduct.sizes.map((sz, i) => {
-                          const isSel = selectedSize === sz;
-                          return (
-                            <TouchableOpacity
-                              key={i}
-                              style={[styles.sizeSelectorChip, isSel && styles.sizeSelectorChipActive]}
-                              onPress={() => !successMsg && setSelectedSize(sz)}
-                            >
-                              <Text style={[styles.sizeSelectorChipText, isSel && styles.sizeSelectorChipTextActive]}>
-                                {sz}
-                              </Text>
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Quantity Counter */}
-                  <View style={styles.qtySection}>
-                    <Text style={styles.modalSectionTitle}>Configure Quantity</Text>
-                    <View style={styles.stepperContainer}>
-                      <TouchableOpacity
-                        style={styles.stepperBtn}
-                        onPress={() => !successMsg && setQty(prev => Math.max(1, prev - 10))}
-                      >
-                        <Text style={styles.stepperBtnTxt}>-10</Text>
-                      </TouchableOpacity>
-                      
-                      <TouchableOpacity
-                        style={styles.stepperBtn}
-                        onPress={() => !successMsg && setQty(prev => Math.max(1, prev - 1))}
-                      >
-                        <Minus size={14} color="#0f172a" />
-                      </TouchableOpacity>
-
-                      <Text style={styles.stepperValue}>{qty}</Text>
-
-                      <TouchableOpacity
-                        style={styles.stepperBtn}
-                        onPress={() => !successMsg && setQty(prev => prev + 1)}
-                      >
-                        <Plus size={14} color="#0f172a" />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={styles.stepperBtn}
-                        onPress={() => !successMsg && setQty(prev => prev + 10)}
-                      >
-                        <Text style={styles.stepperBtnTxt}>+10</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </ScrollView>
-
-                {/* Footer Add Button */}
-                <View style={styles.modalFooter}>
-                  {successMsg ? (
-                    <View style={styles.successMessageBtn}>
-                      <Check size={18} color="#ffffff" style={{ marginRight: 6 }} />
-                      <Text style={styles.successMessageText}>Added to Quote Cart!</Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity 
-                      style={styles.confirmAddBtn} 
-                      onPress={handleConfirmAddToCart}
-                    >
-                      <Text style={styles.confirmAddBtnText}>Add to Quote Cart</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-            )}
-          </View>
         </TouchableOpacity>
-      </Modal>
-    </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Welcome Card */}
+        <View style={styles.welcomeCard}>
+          <View style={styles.welcomeTextContent}>
+            <Text style={styles.welcomeLabel}>Welcome back,</Text>
+            <Text style={styles.companyName} numberOfLines={1}>{user?.companyName || 'Mahesh Enterprises'}</Text>
+            <Text style={styles.welcomeSubtext}>Create and manage your quotations easily.</Text>
+          </View>
+          <View style={styles.welcomeIllustration}>
+            <View style={styles.clipboardIcon}>
+              <View style={styles.clipboardClip} />
+              <View style={styles.clipboardLines}>
+                <View style={styles.line} />
+                <View style={styles.line} />
+                <View style={styles.line} />
+              </View>
+              <View style={styles.plusBadge}>
+                <Plus color="#ffffff" size={14} />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Create Button */}
+        <TouchableOpacity style={styles.createBtn} onPress={onNavigateProduct}>
+          <Plus color="#ffffff" size={20} style={{ marginRight: 8 }} />
+          <Text style={styles.createBtnText}>Create New Quotation</Text>
+        </TouchableOpacity>
+
+        {/* Stats Grid */}
+        <View style={styles.statsContainer}>
+          {stats.map((stat, index) => {
+            const IconComp = stat.icon;
+            return (
+              <TouchableOpacity key={index} style={styles.statCard} onPress={onNavigateOrders}>
+                <View style={[styles.statIconBox, { backgroundColor: stat.bgColor }]}>
+                  <IconComp color={stat.color} size={20} />
+                </View>
+                <Text style={styles.statTitle}>{stat.title}</Text>
+                <Text style={styles.statCount}>{stat.count}</Text>
+                <View style={styles.viewAllRow}>
+                  <Text style={styles.viewAllText}>View All</Text>
+                  <ChevronRight color="#0ea5e9" size={14} />
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Recent Quotations */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Quotations</Text>
+          <TouchableOpacity onPress={onNavigateOrders}>
+            <Text style={styles.sectionLink}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        {recentOrders.length === 0 ? (
+          <View style={styles.emptyRecentBox}>
+            <Text style={styles.emptyRecentText}>No Recent Quotations</Text>
+          </View>
+        ) : (
+          <View style={styles.recentList}>
+            {recentOrders.map((order, index) => (
+              <TouchableOpacity key={index} style={styles.recentItem}>
+                <View style={styles.recentIconBox}>
+                  <FileText color="#3b82f6" size={20} />
+                </View>
+                <View style={styles.recentContent}>
+                  <Text style={styles.recentId}>{order.id}</Text>
+                  <Text style={styles.recentDetails}>{order.date} • {order.items} Items</Text>
+                </View>
+                <View style={[
+                  styles.statusBadge, 
+                  order.status === 'Draft' ? styles.statusDraft : styles.statusSubmitted
+                ]}>
+                  <Text style={[
+                    styles.statusText,
+                    order.status === 'Draft' ? styles.statusTextDraft : styles.statusTextSubmitted
+                  ]}>{order.status}</Text>
+                </View>
+                <ChevronRight color="#cbd5e1" size={20} style={{ marginLeft: 8 }} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* Info Box */}
+        <View style={styles.infoBox}>
+          <Info color="#64748b" size={20} style={{ marginTop: 2, marginRight: 12 }} />
+          <Text style={styles.infoText}>
+            Prices are not shown in this quotation. Only product names and quantities are displayed.
+          </Text>
+        </View>
+
+        {/* Quick Actions */}
+        <Text style={[styles.sectionTitle, { marginTop: 8, marginBottom: 12 }]}>Quick Actions</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickActionsContainer}>
+          <TouchableOpacity style={styles.actionBtn}>
+            <View style={[styles.actionIconBox, { backgroundColor: '#eff6ff' }]}>
+              <FileText color="#3b82f6" size={18} />
+            </View>
+            <Text style={styles.actionText}>How to Use</Text>
+            <ChevronRight color="#cbd5e1" size={16} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionBtn}>
+            <View style={[styles.actionIconBox, { backgroundColor: '#f0fdf4' }]}>
+              <HelpCircle color="#22c55e" size={18} />
+            </View>
+            <Text style={styles.actionText}>Help & Support</Text>
+            <ChevronRight color="#cbd5e1" size={16} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionBtn}>
+            <View style={[styles.actionIconBox, { backgroundColor: '#faf5ff' }]}>
+              <PhoneCall color="#a855f7" size={18} />
+            </View>
+            <Text style={styles.actionText}>Contact Us</Text>
+            <ChevronRight color="#cbd5e1" size={16} />
+          </TouchableOpacity>
+        </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#ffffff', // White header area
   },
-  topHeader: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 45,
-    paddingBottom: 12,
+    paddingTop: 10,
+    paddingBottom: 20,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
-  menuBtn: {
+  headerIconBtn: {
     padding: 8,
-    borderRadius: 10,
-    backgroundColor: '#f1f5f9',
-  },
-  titleBox: {
-    alignItems: 'center',
+    position: 'relative',
   },
   headerTitle: {
     color: '#0f172a',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '800',
   },
-  headerSub: {
-    color: '#0ea5e9',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  policyBadge: {
-    padding: 8,
+  badge: {
+    position: 'absolute',
+    top: 4,
+    right: 6,
+    backgroundColor: '#ef4444',
     borderRadius: 10,
-    backgroundColor: 'rgba(14, 165, 233, 0.12)',
-  },
-  searchSection: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  searchContainer: {
-    flexDirection: 'row',
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 44,
+    borderWidth: 2,
+    borderColor: '#003399',
   },
-  searchInput: {
-    flex: 1,
-    color: '#0f172a',
-    fontSize: 13,
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: 'bold',
   },
-  categorySection: {
-    marginBottom: 8,
-  },
-  categoryScroll: {
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-  catChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  catChipImg: {
-    width: 20,
-    height: 20,
-    marginRight: 8,
-    borderRadius: 4,
-  },
-  catChipActive: {
-    backgroundColor: 'rgba(14, 165, 233, 0.15)',
-    borderColor: '#0ea5e9',
-  },
-  catChipText: {
-    color: '#64748b',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  catChipTextActive: {
-    color: '#0ea5e9',
-    fontWeight: '800',
-  },
-  gridContent: {
-    paddingHorizontal: 10,
+  scrollContent: {
+    backgroundColor: '#f8fafc',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
     paddingBottom: 80,
   },
-  emptyBox: {
-    padding: 40,
-    alignItems: 'center',
-  },
-  emptyText: {
-    color: '#64748b',
-    fontSize: 13,
-  },
-  groupCard: {
-    flex: 1,
-    margin: 6,
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    alignItems: 'center',
-  },
-  sectionHeaderBox: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 8,
-  },
-  sectionHeaderText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#0f172a',
-  },
-  subCategorySection: {
-    marginBottom: 8,
-    marginTop: -4,
-  },
-  groupImageContainer: {
-    width: '100%',
-    height: 120,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  groupImage: {
-    width: '100%',
-    height: '100%',
-  },
-  groupImagePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#e2e8f0',
-  },
-  groupTextContainer: {
-    width: '100%',
-    padding: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  groupName: {
-    color: '#0f172a',
-    fontSize: 13,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+  welcomeCard: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 16,
     padding: 20,
-  },
-  modalContent: {
-    width: '100%',
-    maxHeight: '85%',
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 20,
-    elevation: 8,
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-  },
-  modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    marginBottom: 12,
-  },
-  modalProductTitle: {
-    fontSize: 16,
-    fontWeight: '805',
-    color: '#0f172a',
-  },
-  modalCategoryTitle: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#0ea5e9',
-    marginTop: 2,
-  },
-  closeModalBtn: {
-    padding: 4,
-    borderRadius: 8,
-    backgroundColor: '#f1f5f9',
-  },
-  modalScroll: {
-    maxHeight: 380,
-  },
-  modalImage: {
-    width: '100%',
-    height: 160,
-    borderRadius: 12,
-    backgroundColor: '#f8fafc',
     marginBottom: 16,
+    marginTop: 8,
   },
-  modalSectionTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#334155',
+  welcomeTextContent: {
+    flex: 1,
+    paddingRight: 16,
+  },
+  welcomeLabel: {
+    color: '#1e293b',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  companyName: {
+    color: '#0f172a',
+    fontSize: 20,
+    fontWeight: '800',
     marginBottom: 8,
   },
-  modalDescription: {
-    fontSize: 12,
-    color: '#64748b',
-    lineHeight: 18,
-    marginBottom: 16,
-  },
-  sizesSection: {
-    marginBottom: 16,
-  },
-  sizeChipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  sizeSelectorChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
-  },
-  sizeSelectorChipActive: {
-    borderColor: '#0ea5e9',
-    backgroundColor: 'rgba(14, 165, 233, 0.1)',
-  },
-  sizeSelectorChipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748b',
-  },
-  sizeSelectorChipTextActive: {
-    color: '#0ea5e9',
-    fontWeight: '800',
-  },
-  qtySection: {
-    marginBottom: 12,
-  },
-  stepperContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepperBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#f1f5f9',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  stepperBtnTxt: {
-    fontSize: 11,
-    fontWeight: '700',
+  welcomeSubtext: {
     color: '#475569',
+    fontSize: 13,
+    lineHeight: 18,
   },
-  stepperValue: {
-    width: 48,
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0f172a',
+  welcomeIllustration: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  modalFooter: {
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    paddingTop: 14,
+  clipboardIcon: {
+    width: 50,
+    height: 64,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#bfdbfe',
+    alignItems: 'center',
+    paddingTop: 16,
+    position: 'relative',
   },
-  confirmAddBtn: {
-    width: '100%',
-    height: 46,
+  clipboardClip: {
+    width: 24,
+    height: 8,
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
+    position: 'absolute',
+    top: -4,
+  },
+  clipboardLines: {
+    width: '60%',
+    gap: 6,
+  },
+  line: {
+    height: 2,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 1,
+  },
+  plusBadge: {
+    position: 'absolute',
+    bottom: -6,
+    right: -6,
+    width: 24,
+    height: 24,
     backgroundColor: '#0ea5e9',
     borderRadius: 12,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#eff6ff',
   },
-  confirmAddBtnText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  successMessageBtn: {
-    width: '100%',
-    height: 46,
-    backgroundColor: '#10b981',
+  createBtn: {
+    backgroundColor: '#0ea5e9',
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 14,
+    marginBottom: 20,
   },
-  successMessageText: {
+  createBtnText: {
     color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '850',
+    fontSize: 16,
+    fontWeight: '700',
   },
+  statsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  statCard: {
+    width: '48%',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  statIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statTitle: {
+    color: '#475569',
+    fontSize: 12,
+    marginBottom: 6,
+  },
+  statCount: {
+    color: '#0f172a',
+    fontSize: 22,
+    fontWeight: '800',
+    marginBottom: 10,
+  },
+  viewAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAllText: {
+    color: '#0ea5e9',
+    fontSize: 12,
+    fontWeight: '600',
+    marginRight: 2,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    color: '#0f172a',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  sectionLink: {
+    color: '#0ea5e9',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  recentList: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  recentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  recentIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#eff6ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  recentContent: {
+    flex: 1,
+  },
+  recentId: {
+    color: '#0f172a',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  recentDetails: {
+    color: '#64748b',
+    fontSize: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusSubmitted: {
+    backgroundColor: '#eff6ff',
+  },
+  statusDraft: {
+    backgroundColor: '#f0fdf4',
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  statusTextSubmitted: {
+    color: '#3b82f6',
+  },
+  statusTextDraft: {
+    color: '#22c55e',
+  },
+  infoBox: {
+    flexDirection: 'row',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+  },
+  infoText: {
+    flex: 1,
+    color: '#475569',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  quickActionsContainer: {
+    gap: 12,
+    paddingBottom: 8,
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    paddingRight: 16,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    marginRight: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  actionIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  actionText: {
+    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '700',
+    marginRight: 8,
+  },
+  emptyRecentBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  emptyRecentText: {
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '600',
+  }
 });

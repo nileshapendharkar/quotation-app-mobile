@@ -7,27 +7,7 @@ import { apiRequest } from '../api';
 export default function OrdersScreen() {
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('All');
-  const [orders, setOrders] = useState([
-    {
-      id: "ord_1001",
-      orderNo: "QT-2026-1001",
-      status: "Pending",
-      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      items: [
-        { productName: "Pro-Grade Heavy Duty Safety Helmet", quantity: 100 },
-        { productName: "High-Visibility Reflective Vest (Class 3)", quantity: 200 }
-      ]
-    },
-    {
-      id: "ord_1002",
-      orderNo: "QT-2026-1002",
-      status: "Dispatched",
-      createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-      items: [
-        { productName: "Precision Hydraulic Pressure Control Valve", quantity: 15 }
-      ]
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     fetchOrders();
@@ -35,7 +15,7 @@ export default function OrdersScreen() {
 
   const fetchOrders = async () => {
     const res = await apiRequest(`/orders/my-orders?status=${activeTab}`);
-    if (res.success && res.orders && res.orders.length > 0) {
+    if (res.success && res.orders) {
       setOrders(res.orders);
     }
   };

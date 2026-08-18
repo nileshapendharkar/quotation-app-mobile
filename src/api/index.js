@@ -1,4 +1,5 @@
 import { productImages } from '../utils/imageMapping';
+import { apiCircuitBreaker } from './CircuitBreaker';
 
 const API_BASE_URL = 'https://quotation-app-backend.onrender.com/api';
 
@@ -43,12 +44,18 @@ export const apiRequest = async (endpoint, method = 'GET', body = null) => {
     options.body = JSON.stringify(body);
   }
 
-  try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error(`Mobile API Error [${endpoint}]:`, err);
-    return { success: false, message: 'Network connection failed' };
-  }
+  const action = async (signal) => {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, signal });
+    if (!res.ok) {
+      throw new Error(`HTTP Error: ${res.status}`);
+    }
+    return await res.json();
+  };
+
+  const fallback = (reason) => {
+    console.error(`Mobile API Error [${endpoint}]:`, reason);
+    return { success: false, message: 'Service temporarily unavailable or network connection failed' };
+  };
+
+  return await apiCircuitBreaker.execute(action, fallback);
 };
