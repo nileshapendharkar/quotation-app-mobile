@@ -24,7 +24,9 @@ export default function CartScreen({ onNavigateOrders }) {
         productId: i.productId,
         productName: i.productName,
         quantity: i.quantity,
-        size: i.size || ''
+        size: i.size || '',
+        productCode: i.productCode || '',
+        packing: i.packing || ''
       })),
       notes: "Generated via Mobile Quotation App"
     };
@@ -58,7 +60,7 @@ export default function CartScreen({ onNavigateOrders }) {
     if (!generatedOrder) return;
 
     const itemsText = generatedOrder.items
-      .map(item => `• ${item.productName}${item.size ? ` (Size: ${item.size})` : ''} (Qty: ${item.quantity})`)
+      .map(item => `• ${item.productName}${item.size ? ` (Size: ${item.size})` : ''}${item.productCode ? ` [Code: ${item.productCode}]` : ''}${item.packing ? ` (Packing: ${item.packing})` : ''} (Qty: ${item.quantity})`)
       .join('\n');
 
     const message = `*Gouri Aqua Plast - Product Quotation*\n` +
@@ -85,8 +87,10 @@ export default function CartScreen({ onNavigateOrders }) {
     try {
       const itemsHtml = generatedOrder.items.map(item => `
         <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.productCode || '-'}</td>
           <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.productName}</td>
           <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.size || '-'}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.packing || '-'}</td>
           <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">${item.quantity}</td>
         </tr>
       `).join('');
@@ -123,8 +127,10 @@ export default function CartScreen({ onNavigateOrders }) {
             <table>
               <thead>
                 <tr>
-                  <th>Product</th>
+                  <th>Code</th>
+                  <th>Product Name</th>
                   <th>Size</th>
+                  <th>Packing</th>
                   <th style="text-align: right;">Qty</th>
                 </tr>
               </thead>
@@ -183,11 +189,25 @@ export default function CartScreen({ onNavigateOrders }) {
                   </Text>
                   <Text style={styles.cardTitle} numberOfLines={2}>{item.productName}</Text>
                   
-                  {item.size ? (
-                    <View style={styles.sizeBadge}>
-                      <Text style={styles.sizeText}>Size: {item.size}</Text>
-                    </View>
-                  ) : null}
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                    {item.size ? (
+                      <View style={styles.sizeBadge}>
+                        <Text style={styles.sizeText}>Size: {item.size}</Text>
+                      </View>
+                    ) : null}
+
+                    {item.productCode ? (
+                      <View style={[styles.sizeBadge, { backgroundColor: 'rgba(16, 119, 255, 0.08)', borderColor: 'rgba(16, 119, 255, 0.15)' }]}>
+                        <Text style={[styles.sizeText, { color: '#1677ff' }]}>Code: {item.productCode}</Text>
+                      </View>
+                    ) : null}
+
+                    {item.packing ? (
+                      <View style={[styles.sizeBadge, { backgroundColor: 'rgba(16, 185, 129, 0.08)', borderColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                        <Text style={[styles.sizeText, { color: '#10b981' }]}>Packing: {item.packing} Units/Pack</Text>
+                      </View>
+                    ) : null}
+                  </View>
                 </View>
 
                 <View style={styles.itemControls}>
@@ -276,6 +296,17 @@ export default function CartScreen({ onNavigateOrders }) {
                           {item.categoryName} {item.subCategoryName ? `› ${item.subCategoryName}` : ''}
                         </Text>
                       )}
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                        {item.size ? (
+                          <Text style={{ fontSize: 10, color: '#64748b', backgroundColor: '#f1f5f9', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>Size: {item.size}</Text>
+                        ) : null}
+                        {item.productCode ? (
+                          <Text style={{ fontSize: 10, color: '#0ea5e9', backgroundColor: 'rgba(14, 165, 233, 0.1)', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>Code: {item.productCode}</Text>
+                        ) : null}
+                        {item.packing ? (
+                          <Text style={{ fontSize: 10, color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>Packing: {item.packing}</Text>
+                        ) : null}
+                      </View>
                     </View>
                     <Text style={styles.pdfItemQty}>{item.quantity} Units</Text>
                   </View>

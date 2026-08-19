@@ -121,6 +121,11 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct }) {
 
   const handleConfirmAddToCart = () => {
     if (!selectedProduct) return;
+    // If product has sizes but none selected, alert user
+    if (selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) {
+      alert('Please select a size before adding to cart.');
+      return;
+    }
     addToCart(selectedProduct, qty, selectedSize);
     setSuccessMsg(true);
     setTimeout(() => {
@@ -342,30 +347,11 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct }) {
                 {/* Content */}
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
                   <Image source={getImageUrl(selectedProduct.image)} style={styles.modalImage} resizeMode="contain" />
-                  
-                  <Text style={styles.modalSectionTitle}>Description</Text>
-                  <Text style={styles.modalDescription}>
-                    {selectedProduct.description || 'No description available for this item.'}
-                  </Text>
 
-                  {(selectedProduct.details) && (
-                    <>
-                      <Text style={styles.modalSectionTitle}>Details</Text>
-                      <Text style={styles.modalDescription}>{selectedProduct.details}</Text>
-                    </>
-                  )}
-
-                  {(selectedProduct.specification) && (
-                    <>
-                      <Text style={styles.modalSectionTitle}>Specifications</Text>
-                      <Text style={styles.modalDescription}>{selectedProduct.specification}</Text>
-                    </>
-                  )}
-
-                  {/* Size Options Selection */}
+                  {/* ── SIZE SELECTION (prominent, top position) ── */}
                   {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
                     <View style={styles.sizesSection}>
-                      <Text style={styles.modalSectionTitle}>Select Size Option</Text>
+                      <Text style={styles.sizeSelectionLabel}>Select Size <Text style={{ color: '#ef4444' }}>*</Text></Text>
                       <View style={styles.sizeChipsRow}>
                         {selectedProduct.sizes.map((sz, i) => {
                           const isSel = selectedSize === sz;
@@ -385,16 +371,61 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct }) {
                     </View>
                   )}
 
-                  {/* Pack Size Display */}
-                  {(selectedProduct.packSize || (selectedProduct.packSizes && selectedProduct.packSizes[selectedSize])) && (
-                    <View style={{ marginBottom: 16 }}>
-                      <Text style={styles.modalSectionTitle}>Standard Pack Size</Text>
-                      <View style={{ backgroundColor: '#f1f5f9', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#e2e8f0' }}>
-                        <Text style={{ fontSize: 13, color: '#0ea5e9', fontWeight: '700' }}>
-                          📦 {selectedProduct.packSizes && selectedProduct.packSizes[selectedSize] ? selectedProduct.packSizes[selectedSize] : selectedProduct.packSize} Units / Pack
+                  {/* Product Details Block */}
+                  <View style={{ backgroundColor: '#f8fafc', padding: 12, borderRadius: 10, borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 16 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e293b', marginBottom: 8 }}>Product Details</Text>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                      <Text style={{ fontSize: 12, color: '#64748b' }}>Product Category</Text>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: '#0f172a' }}>{selectedProduct.categoryName || 'N/A'}</Text>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                      <Text style={{ fontSize: 12, color: '#64748b' }}>Product Name</Text>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: '#0f172a', flex: 1, textAlign: 'right', marginLeft: 16 }} numberOfLines={1}>{selectedProduct.name}</Text>
+                    </View>
+
+                    {selectedSize ? (
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                        <Text style={{ fontSize: 12, color: '#64748b' }}>Selected Size</Text>
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: '#0ea5e9' }}>{selectedSize}</Text>
+                      </View>
+                    ) : null}
+
+                    {selectedProduct.sizeProductCodes && selectedProduct.sizeProductCodes[selectedSize] ? (
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                        <Text style={{ fontSize: 12, color: '#64748b' }}>Product Code</Text>
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: '#0ea5e9' }}>{selectedProduct.sizeProductCodes[selectedSize]}</Text>
+                      </View>
+                    ) : null}
+
+                    {(selectedProduct.packSizes && selectedProduct.packSizes[selectedSize]) || selectedProduct.packSize ? (
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
+                        <Text style={{ fontSize: 12, color: '#64748b' }}>Packing</Text>
+                        <Text style={{ fontSize: 12, fontWeight: '600', color: '#10b981' }}>
+                          {selectedProduct.packSizes && selectedProduct.packSizes[selectedSize] ? `${selectedProduct.packSizes[selectedSize]} Units / Pack` : `${selectedProduct.packSize} Units / Pack`}
                         </Text>
                       </View>
-                    </View>
+                    ) : null}
+                  </View>
+
+                  <Text style={styles.modalSectionTitle}>Description</Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedProduct.description || 'No description available for this item.'}
+                  </Text>
+
+                  {(selectedProduct.details) && (
+                    <>
+                      <Text style={styles.modalSectionTitle}>Details</Text>
+                      <Text style={styles.modalDescription}>{selectedProduct.details}</Text>
+                    </>
+                  )}
+
+                  {(selectedProduct.specification) && (
+                    <>
+                      <Text style={styles.modalSectionTitle}>Specifications</Text>
+                      <Text style={styles.modalDescription}>{selectedProduct.specification}</Text>
+                    </>
                   )}
 
                   {/* Quantity Counter */}
@@ -664,7 +695,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
   },
   modalScroll: {
-    maxHeight: 380,
+    maxHeight: 460,
+  },
+  sizeSelectionLabel: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0f172a',
+    marginBottom: 10,
   },
   modalImage: {
     width: '100%',

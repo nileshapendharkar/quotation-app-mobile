@@ -99,9 +99,25 @@ export default function OrdersScreen() {
               <Text style={styles.sectionLabel}>REQUESTED ITEMS (NO PRICING)</Text>
               <View style={styles.itemsList}>
                 {item.items.map((prod, idx) => (
-                  <View key={idx} style={styles.itemRow}>
-                    <Text style={styles.itemTitle}>{prod.productName}{prod.size ? ` (Size: ${prod.size})` : ''}</Text>
-                    <Text style={styles.itemQty}>× {prod.quantity} Units</Text>
+                  <View key={idx} style={[styles.itemRow, { flexDirection: 'column', alignItems: 'stretch', gap: 4 }]}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={styles.itemTitle}>{prod.productName}</Text>
+                      <Text style={styles.itemQty}>× {prod.quantity} Units</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                      {prod.size ? (
+                        <Text style={{ fontSize: 10, color: '#64748b', backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3 }}>Size: {prod.size}</Text>
+                      ) : null}
+                      {prod.productCode ? (
+                        <Text style={{ fontSize: 10, color: '#0ea5e9', backgroundColor: 'rgba(14, 165, 233, 0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3 }}>Code: {prod.productCode}</Text>
+                      ) : null}
+                      {prod.packing ? (
+                        <Text style={{ fontSize: 10, color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3 }}>Packing: {prod.packing}</Text>
+                      ) : null}
+                      {prod.categoryName ? (
+                        <Text style={{ fontSize: 10, color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3 }}>{prod.categoryName}</Text>
+                      ) : null}
+                    </View>
                   </View>
                 ))}
               </View>
