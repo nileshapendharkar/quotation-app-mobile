@@ -44,6 +44,13 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
       resizeMode="cover"
     >
       <SafeAreaView style={styles.safeArea}>
+        {/* Top Watermark */}
+        <Image 
+          source={require('../../assets/top-watermark.png')} 
+          style={styles.topWatermark} 
+          resizeMode="contain"
+        />
+        
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onOpenMenu} style={styles.headerIconBtn}>
@@ -506,5 +513,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#64748b',
+  },
+  topWatermark: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 150,
+    height: 100,
+    opacity: 0.85,
+    zIndex: 10,
   }
 });
