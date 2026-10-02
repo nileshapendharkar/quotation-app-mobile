@@ -31,23 +31,28 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
       console.log('Calling sendOtp API...');
       const res = await loginContextSendOtp(cleanPhone);
       console.log('API Response:', res);
-      
+
       setLoading(false);
 
       if (res && res.success) {
         console.log('Success! Proceeding to Step 2');
         setOtpToken(res.otpToken);
         setStep(2);
-        
-        const autoOtp = res.mockOtp ? res.mockOtp.toString() : '123456';
-        setOtp(autoOtp);
-        
-        // Auto submit login with OTP for seamless auto-login
-        setLoading(true);
-        const loginRes = await login(cleanPhone, autoOtp, res.otpToken);
-        setLoading(false);
-        if (!loginRes.success) {
-          setError(loginRes.message);
+
+        if (res.mockOtp) {
+          // Simulation mode: the server has no SMS gateway configured, so it returns the OTP
+          // itself. Keep the old seamless auto-login for development.
+          const autoOtp = res.mockOtp.toString();
+          setOtp(autoOtp);
+          setLoading(true);
+          const loginRes = await login(cleanPhone, autoOtp, res.otpToken);
+          setLoading(false);
+          if (!loginRes.success) {
+            setError(loginRes.message);
+          }
+        } else {
+          // Real SMS was sent: wait for the user to type the OTP and press "Verify & Continue"
+          setOtp('');
         }
       } else {
         console.log('Response failed:', res?.message);
@@ -100,8 +105,8 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
         resizeMode="cover"
       >
         {Platform.OS === 'ios' ? (
-          <KeyboardAvoidingView 
-            behavior="padding" 
+          <KeyboardAvoidingView
+            behavior="padding"
             style={styles.keyboardView}
           >
             <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollGrow} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -156,7 +161,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
                           <Text style={styles.editNumberText}>Edit Number</Text>
                         </TouchableOpacity>
                       </View>
-                      
+
                       <View style={styles.otpBoxesContainer}>
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                           <TextInput
@@ -242,7 +247,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateForgot }) {
                           <Text style={styles.editNumberText}>Edit Number</Text>
                         </TouchableOpacity>
                       </View>
-                      
+
                       <View style={styles.otpBoxesContainer}>
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                           <TextInput
