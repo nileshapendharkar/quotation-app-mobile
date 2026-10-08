@@ -4,6 +4,7 @@ import { Menu, Search, Filter, Shield, Plus, Minus, X, Check, Bell } from 'lucid
 import ProductCard from '../components/ProductCard';
 import { apiRequest, getImageUrl } from '../api';
 import { CartContext } from '../context/CartContext';
+import { FavoriteContext } from '../context/FavoriteContext';
 
 const { width } = Dimensions.get('window');
 
@@ -18,6 +19,7 @@ const BANNERS = [
 
 export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateNotifications }) {
   const { addToCart } = useContext(CartContext);
+  const { isFavorite, toggleFavorite } = useContext(FavoriteContext);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
@@ -204,9 +206,14 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
   // FlatList renderItem for virtualized product grid
   const renderProductItem = useCallback(({ item }) => (
     <View style={styles.gridItemWrapper}>
-      <ProductCard product={item} onSelect={handleOpenProductDetail} />
+      <ProductCard 
+        product={item} 
+        favorited={isFavorite(item.id)}
+        onToggleFavorite={toggleFavorite}
+        onSelect={handleOpenProductDetail} 
+      />
     </View>
-  ), [handleOpenProductDetail]);
+  ), [handleOpenProductDetail, isFavorite, toggleFavorite]);
 
   const productKeyExtractor = useCallback((item) => item.id, []);
 
@@ -259,128 +266,118 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
           </View>
         )}
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-          
-          {(!selectedCat && !search && !showSearch) && (
-            <React.Fragment>
-              {/* Banner Slider */}
-              <View style={styles.bannerWrapper}>
-                <ScrollView 
-                  ref={bannerRef}
-                  horizontal 
-                  pagingEnabled 
-                  showsHorizontalScrollIndicator={false} 
-                  onScroll={handleBannerScroll}
-                  scrollEventThrottle={16}
-                >
-                  {BANNERS.map((img, idx) => (
-                    <Image key={idx} source={img} style={styles.bannerImage} resizeMode="stretch" />
-                  ))}
-                </ScrollView>
-                <View style={styles.carouselDots}>
-                  {BANNERS.map((_, idx) => (
-                    <View key={idx} style={[styles.dot, activeBanner === idx && styles.activeDot]} />
-                  ))}
-                </View>
+        {selectedCat || search || showSearch ? (
+          <FlatList
+            data={products}
+            renderItem={renderProductItem}
+            keyExtractor={productKeyExtractor}
+            numColumns={2}
+            ListHeaderComponent={
+              <View>
+                {/* Main Category Chips if a category is selected */}
+                {selectedCat && !search && (
+                  <View style={[styles.subCategorySection, { paddingBottom: currentSubCats.length > 0 ? 5 : 16 }]}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
+                      {categories.filter(c => c.id !== '').map((cat) => {
+                        const isSelCat = selectedCat === cat.id;
+                        return (
+                          <TouchableOpacity
+                            key={cat.id}
+                            style={[styles.catChip, isSelCat && styles.catChipActive]}
+                            onPress={() => handleSelectCategory(cat.id)}
+                          >
+                            <Text style={[styles.catChipText, isSelCat && styles.catChipTextActive]}>{cat.name}</Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+                )}
+
+                {/* Subcategory Chips if a category is selected */}
+                {selectedCat && !search && currentSubCats.length > 0 && (
+                  <View style={[styles.subCategorySection, { paddingTop: 5 }]}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
+                      <TouchableOpacity
+                        style={[styles.catChip, !selectedSubCat && styles.catChipActive]}
+                        onPress={() => setSelectedSubCat('')}
+                      >
+                        <Text style={[styles.catChipText, !selectedSubCat && styles.catChipTextActive]}>All</Text>
+                      </TouchableOpacity>
+                      {currentSubCats.map((sub) => {
+                        const isSelSub = selectedSubCat === sub.id;
+                        return (
+                          <TouchableOpacity
+                            key={sub.id}
+                            style={[styles.catChip, isSelSub && styles.catChipActive]}
+                            onPress={() => handleSelectSubCategory(sub.id)}
+                          >
+                            <Text style={[styles.catChipText, isSelSub && styles.catChipTextActive]}>{sub.name}</Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+                )}
               </View>
-
-
-              
-              {/* 3x3 Grid Categories */}
-              <View style={styles.categoriesSection}>
-                <Text style={styles.sectionTitle}>Categories</Text>
-                <View style={styles.categoriesGrid}>
-                  {categories.filter(c => c.id !== '').map((item, index) => (
-                    <TouchableOpacity key={item.id} style={styles.categoryCard} onPress={() => handleSelectCategory(item.id)}>
-                      <View style={styles.categoryImageWrapper}>
-                        {item.image ? (
-                          <Image source={getImageUrl(item.image)} style={styles.categoryImage} resizeMode="contain" />
-                        ) : (
-                          <View style={styles.categoryImagePlaceholder} />
-                        )}
-                      </View>
-                      <View style={styles.categoryTextWrapper}>
-                        <Text style={styles.categoryText} numberOfLines={2}>{item.name}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+            }
+            ListEmptyComponent={
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyText}>No matching quotation products found.</Text>
               </View>
-              
-            </React.Fragment>
-          )}
-
-          {/* Main Category Chips if a category is selected */}
-          {selectedCat && !search && (
-            <View style={[styles.subCategorySection, { paddingBottom: currentSubCats.length > 0 ? 5 : 16 }]}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
-                {categories.filter(c => c.id !== '').map((cat) => {
-                  const isSelCat = selectedCat === cat.id;
-                  return (
-                    <TouchableOpacity
-                      key={cat.id}
-                      style={[styles.catChip, isSelCat && styles.catChipActive]}
-                      onPress={() => handleSelectCategory(cat.id)}
-                    >
-                      <Text style={[styles.catChipText, isSelCat && styles.catChipTextActive]}>{cat.name}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
+            }
+            contentContainerStyle={styles.productsFlatListContent}
+            removeClippedSubviews={Platform.OS === 'android'}
+            maxToRenderPerBatch={8}
+            windowSize={5}
+            initialNumToRender={8}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            {/* Banner Slider */}
+            <View style={styles.bannerWrapper}>
+              <ScrollView 
+                ref={bannerRef}
+                horizontal 
+                pagingEnabled 
+                showsHorizontalScrollIndicator={false} 
+                onScroll={handleBannerScroll}
+                scrollEventThrottle={16}
+              >
+                {BANNERS.map((img, idx) => (
+                  <Image key={idx} source={img} style={styles.bannerImage} resizeMode="stretch" fadeDuration={0} />
+                ))}
               </ScrollView>
+              <View style={styles.carouselDots}>
+                {BANNERS.map((_, idx) => (
+                  <View key={idx} style={[styles.dot, activeBanner === idx && styles.activeDot]} />
+                ))}
+              </View>
             </View>
-          )}
 
-          {/* Subcategory Chips if a category is selected */}
-          {selectedCat && !search && currentSubCats.length > 0 && (
-            <View style={[styles.subCategorySection, { paddingTop: 5 }]}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
-                <TouchableOpacity
-                  style={[styles.catChip, !selectedSubCat && styles.catChipActive]}
-                  onPress={() => setSelectedSubCat('')}
-                >
-                  <Text style={[styles.catChipText, !selectedSubCat && styles.catChipTextActive]}>All</Text>
-                </TouchableOpacity>
-                {currentSubCats.map((sub, index) => {
-                  const isSelSub = selectedSubCat === sub.id;
-                  return (
-                    <TouchableOpacity
-                      key={sub.id}
-                      style={[styles.catChip, isSelSub && styles.catChipActive]}
-                      onPress={() => handleSelectSubCategory(sub.id)}
-                    >
-                      <Text style={[styles.catChipText, isSelSub && styles.catChipTextActive]}>{sub.name}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
+            {/* 3x3 Grid Categories */}
+            <View style={styles.categoriesSection}>
+              <Text style={styles.sectionTitle}>Categories</Text>
+              <View style={styles.categoriesGrid}>
+                {categories.filter(c => c.id !== '').map((item) => (
+                  <TouchableOpacity key={item.id} style={styles.categoryCard} onPress={() => handleSelectCategory(item.id)}>
+                    <View style={styles.categoryImageWrapper}>
+                      {item.image ? (
+                        <Image source={getImageUrl(item.image)} style={styles.categoryImage} resizeMode="contain" fadeDuration={0} />
+                      ) : (
+                        <View style={styles.categoryImagePlaceholder} />
+                      )}
+                    </View>
+                    <View style={styles.categoryTextWrapper}>
+                      <Text style={styles.categoryText} numberOfLines={2}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          )}
-
-          {/* Products Grid — FlatList for virtualized rendering */}
-          {(selectedCat || search || showSearch) && (
-            <View style={styles.gridContainer}>
-              {products.length === 0 ? (
-                <View style={styles.emptyBox}>
-                  <Text style={styles.emptyText}>No matching quotation products found.</Text>
-                </View>
-              ) : (
-                <FlatList
-                  data={products}
-                  renderItem={renderProductItem}
-                  keyExtractor={productKeyExtractor}
-                  numColumns={2}
-                  scrollEnabled={false}
-                  contentContainerStyle={styles.productsGrid}
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={10}
-                  windowSize={5}
-                  initialNumToRender={6}
-                />
-              )}
-            </View>
-          )}
-
-        </ScrollView>
+          </ScrollView>
+        )}
       </SafeAreaView>
 
       {/* Product Detail Modal */}
@@ -753,6 +750,10 @@ const styles = StyleSheet.create({
   },
   productsGrid: {
     paddingBottom: 10,
+  },
+  productsFlatListContent: {
+    paddingHorizontal: 10,
+    paddingBottom: 90,
   },
   gridItemWrapper: {
     flex: 1,

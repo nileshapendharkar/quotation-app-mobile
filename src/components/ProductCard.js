@@ -1,28 +1,33 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Heart, PlusCircle, Check } from 'lucide-react-native';
-import { FavoriteContext } from '../context/FavoriteContext';
-import { CartContext } from '../context/CartContext';
+import { Heart, PlusCircle } from 'lucide-react-native';
 import { getImageUrl } from '../api';
 
-function ProductCard({ product, onSelect }) {
-  const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
-  const { addToCart } = useContext(CartContext);
-
-  const favorited = isFavorite(product.id);
-
+function ProductCard({ product, onSelect, favorited = false, onToggleFavorite }) {
   return (
     <View style={styles.card}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect && onSelect(product)}>
         <View style={styles.imageContainer}>
-          <Image source={getImageUrl(product.image)} style={styles.image} resizeMode="contain" />
+          <Image 
+            source={getImageUrl(product.image)} 
+            style={styles.image} 
+            resizeMode="contain"
+            fadeDuration={0}
+          />
           
-          <TouchableOpacity 
-            style={styles.heartButton}
-            onPress={() => toggleFavorite(product)}
-          >
-            <Heart size={18} color={favorited ? '#ef4444' : '#ffffff'} fill={favorited ? '#ef4444' : 'transparent'} />
-          </TouchableOpacity>
+          {onToggleFavorite && (
+            <TouchableOpacity 
+              style={styles.heartButton}
+              onPress={() => onToggleFavorite(product)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Heart 
+                size={18} 
+                color={favorited ? '#ef4444' : '#ffffff'} 
+                fill={favorited ? '#ef4444' : 'transparent'} 
+              />
+            </TouchableOpacity>
+          )}
 
           {product.categoryName && (
             <View style={styles.categoryBadge}>
@@ -45,7 +50,11 @@ function ProductCard({ product, onSelect }) {
   );
 }
 
-export default React.memo(ProductCard);
+export default React.memo(ProductCard, (prev, next) => {
+  return prev.product.id === next.product.id &&
+         prev.product.name === next.product.name &&
+         prev.favorited === next.favorited;
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -58,7 +67,7 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
   imageContainer: {
-    aspectRatio: 1, // Dynamically scales to always be a perfect square on any screen size
+    aspectRatio: 1,
     width: '100%',
     position: 'relative',
     backgroundColor: '#f1f5f9',
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 18,
     marginBottom: 4,
-    minHeight: 36, // Ensures 2 lines of text height for perfect alignment
+    minHeight: 36,
   },
   policyTag: {
     color: '#0ea5e9',

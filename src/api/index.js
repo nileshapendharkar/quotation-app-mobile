@@ -29,18 +29,25 @@ export const clearApiCache = () => {
   apiCache.clear();
 };
 
+const imageSourceCache = new Map();
+const DEFAULT_IMAGE_SOURCE = { uri: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80' };
+
 export const getImageUrl = (path) => {
-  if (!path) return { uri: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80' };
+  if (!path) return DEFAULT_IMAGE_SOURCE;
+  const cached = imageSourceCache.get(path);
+  if (cached) return cached;
   
+  let source;
   if (path.startsWith('http') || path.startsWith('data:')) {
-    return { uri: path };
+    source = { uri: path };
+  } else if (productImages && productImages[path]) {
+    source = productImages[path];
+  } else {
+    source = { uri: `${IMAGE_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}` };
   }
   
-  if (productImages && productImages[path]) {
-    return productImages[path];
-  }
-  
-  return { uri: `${IMAGE_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}` };
+  imageSourceCache.set(path, source);
+  return source;
 };
 
 export const apiRequest = async (endpoint, method = 'GET', body = null) => {

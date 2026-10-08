@@ -115,7 +115,7 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
             {/* Total Card */}
             <TouchableOpacity style={styles.statCard} onPress={onNavigateOrders}>
               <View style={styles.statImageContainer}>
-                <Image source={require('../../assets/1.png')} style={styles.statImage} resizeMode="contain" />
+                <Image source={require('../../assets/1.png')} style={styles.statImage} resizeMode="contain" fadeDuration={0} />
               </View>
               <View style={styles.statBottomContent}>
                 <Text style={styles.statNumber}>01</Text>
@@ -126,7 +126,7 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
             {/* Draft Card */}
             <TouchableOpacity style={styles.statCard} onPress={onNavigateOrders}>
               <View style={styles.statImageContainer}>
-                <Image source={require('../../assets/2.png')} style={styles.statImage} resizeMode="contain" />
+                <Image source={require('../../assets/2.png')} style={styles.statImage} resizeMode="contain" fadeDuration={0} />
               </View>
               <View style={styles.statBottomContent}>
                 <Text style={styles.statNumber}>02</Text>
@@ -137,7 +137,7 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
             {/* Submit Card */}
             <TouchableOpacity style={styles.statCard} onPress={onNavigateOrders}>
               <View style={styles.statImageContainer}>
-                <Image source={require('../../assets/3.png')} style={styles.statImage} resizeMode="contain" />
+                <Image source={require('../../assets/3.png')} style={styles.statImage} resizeMode="contain" fadeDuration={0} />
               </View>
               <View style={styles.statBottomContent}>
                 <Text style={styles.statNumber}>03</Text>
@@ -148,7 +148,7 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
             {/* Decline Card */}
             <TouchableOpacity style={styles.statCard} onPress={onNavigateOrders}>
               <View style={styles.statImageContainer}>
-                <Image source={require('../../assets/4.png')} style={styles.statImage} resizeMode="contain" />
+                <Image source={require('../../assets/4.png')} style={styles.statImage} resizeMode="contain" fadeDuration={0} />
               </View>
               <View style={styles.statBottomContent}>
                 <Text style={styles.statNumber}>04</Text>

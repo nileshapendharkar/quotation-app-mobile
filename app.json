@@ -2,8 +2,9 @@
   "expo": {
     "name": "Gouri Aqua Plast",
     "slug": "gouri-aqua-plast",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
+    "platforms": ["android", "ios", "web"],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -26,10 +27,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ganeshgouri.quotationapp"
+      "package": "com.ganeshgouri.quotationapp",
+      "versionCode": 2
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "owner": "npendharkar8",
     "extra": {

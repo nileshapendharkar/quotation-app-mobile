@@ -123,70 +123,77 @@ function MainAppNavigator() {
     );
   }
 
-  const renderActiveScreen = () => {
-    switch (currentTab) {
-      case 'Home':
-        return (
-          <HomeScreen
-            onOpenMenu={() => setSideMenuVisible(true)}
-            onNavigateProduct={() => changeTab('Product')}
-            onNavigateOrders={() => changeTab('Orders')}
-            onNavigateNotifications={() => changeTab('Notifications')}
-          />
-        );
-      case 'Product':
-        return (
-          <ProductScreen
-            onOpenMenu={() => setSideMenuVisible(true)}
-            onSelectProduct={(p) => changeTab('Cart')}
-          />
-        );
-      case 'Favorite':
-        return (
-          <FavoriteScreen
-            onNavigateHome={() => changeTab('Home')}
-            onOpenMenu={() => setSideMenuVisible(true)}
-            onNavigateNotifications={() => changeTab('Notifications')}
-            onNavigateSearch={() => changeTab('Product')}
-          />
-        );
-      case 'Cart':
-        return (
-          <CartScreen
-            onNavigateOrders={() => changeTab('Orders')}
-            onOpenMenu={() => setSideMenuVisible(true)}
-            onNavigateNotifications={() => changeTab('Notifications')}
-            onNavigateSearch={() => changeTab('Product')}
-          />
-        );
-      case 'Orders':
-        return <OrdersScreen onNavigateBack={() => changeTab('Home')} />;
-      case 'Drafts':
-        return (
-          <DraftsScreen
-            onNavigateBack={() => changeTab('Home')}
-            onNavigateCart={() => changeTab('Cart')}
-            onOpenMenu={() => setSideMenuVisible(true)}
-          />
-        );
-      case 'Notifications':
-        return <NotificationsScreen onNavigateBack={() => changeTab('Home')} />;
-      case 'CompanyProfile':
-        return <CompanyProfileScreen onNavigateBack={() => changeTab('Home')} />;
-      case 'ChangePassword':
-        return <ChangePasswordScreen onNavigateBack={() => changeTab('Home')} />;
-      default:
-        return <HomeScreen onOpenMenu={() => setSideMenuVisible(true)} />;
-    }
-  };
-
   const showBottomBar = ['Home', 'Product', 'Favorite', 'Cart', 'Orders'].includes(currentTab);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.screenContainer}>
-        {renderActiveScreen()}
+        {/* Core Tabs kept mounted for instant 0ms tab switching and preserved state */}
+        <View style={[styles.tabScreenWrap, currentTab === 'Home' ? styles.visibleScreen : styles.hiddenScreen]}>
+          <HomeScreen
+            onOpenMenu={() => setSideMenuVisible(true)}
+            onNavigateProduct={() => changeTab('Product')}
+            onNavigateOrders={() => changeTab('Orders')}
+            onNavigateNotifications={() => changeTab('Notifications')}
+          />
+        </View>
+
+        <View style={[styles.tabScreenWrap, currentTab === 'Product' ? styles.visibleScreen : styles.hiddenScreen]}>
+          <ProductScreen
+            onOpenMenu={() => setSideMenuVisible(true)}
+            onSelectProduct={(p) => changeTab('Cart')}
+          />
+        </View>
+
+        <View style={[styles.tabScreenWrap, currentTab === 'Favorite' ? styles.visibleScreen : styles.hiddenScreen]}>
+          <FavoriteScreen
+            onNavigateHome={() => changeTab('Home')}
+            onOpenMenu={() => setSideMenuVisible(true)}
+            onNavigateNotifications={() => changeTab('Notifications')}
+            onNavigateSearch={() => changeTab('Product')}
+          />
+        </View>
+
+        <View style={[styles.tabScreenWrap, currentTab === 'Cart' ? styles.visibleScreen : styles.hiddenScreen]}>
+          <CartScreen
+            onNavigateOrders={() => changeTab('Orders')}
+            onOpenMenu={() => setSideMenuVisible(true)}
+            onNavigateNotifications={() => changeTab('Notifications')}
+            onNavigateSearch={() => changeTab('Product')}
+          />
+        </View>
+
+        {/* Secondary modal/sub-screens dynamically mounted */}
+        {currentTab === 'Orders' && (
+          <View style={styles.tabScreenWrap}>
+            <OrdersScreen onNavigateBack={() => changeTab('Home')} />
+          </View>
+        )}
+        {currentTab === 'Drafts' && (
+          <View style={styles.tabScreenWrap}>
+            <DraftsScreen
+              onNavigateBack={() => changeTab('Home')}
+              onNavigateCart={() => changeTab('Cart')}
+              onOpenMenu={() => setSideMenuVisible(true)}
+            />
+          </View>
+        )}
+        {currentTab === 'Notifications' && (
+          <View style={styles.tabScreenWrap}>
+            <NotificationsScreen onNavigateBack={() => changeTab('Home')} />
+          </View>
+        )}
+        {currentTab === 'CompanyProfile' && (
+          <View style={styles.tabScreenWrap}>
+            <CompanyProfileScreen onNavigateBack={() => changeTab('Home')} />
+          </View>
+        )}
+        {currentTab === 'ChangePassword' && (
+          <View style={styles.tabScreenWrap}>
+            <ChangePasswordScreen onNavigateBack={() => changeTab('Home')} />
+          </View>
+        )}
       </View>
 
       {showBottomBar && (
@@ -249,5 +256,19 @@ const styles = StyleSheet.create({
   },
   screenContainer: {
     flex: 1,
+    position: 'relative',
+  },
+  tabScreenWrap: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  visibleScreen: {
+    display: 'flex',
+    opacity: 1,
+    zIndex: 1,
+  },
+  hiddenScreen: {
+    display: 'none',
+    opacity: 0,
+    zIndex: 0,
   },
 });
