@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
   if (typeof window !== 'undefined' && window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     return 'http://localhost:5000/api';
   }
-  return 'https://quotation-app-backend.onrender.com/api';
+  return 'https://quotation-app-backend-master.vercel.app/api';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
