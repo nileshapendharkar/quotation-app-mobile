@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gouri Aqua Plast",
     "slug": "gouri-aqua-plast",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "sdkVersion": "50.0.0",
     "orientation": "portrait",
     "platforms": ["android", "ios", "web"],
@@ -29,7 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.ganeshgouri.quotationapp",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png",

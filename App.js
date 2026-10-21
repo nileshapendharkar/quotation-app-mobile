@@ -66,6 +66,7 @@ function MainAppNavigator() {
   const [authScreen, setAuthScreen] = useState('Login'); // Login, Register, Forgot
   const [currentTab, setCurrentTab] = useState('Home'); // Home, Favorite, Cart, Orders, CompanyProfile, ChangePassword
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
+  const [catalogResetKey, setCatalogResetKey] = useState(0);
 
   const changeAuthScreen = (screen) => {
     setAuthScreen(screen);
@@ -73,6 +74,18 @@ function MainAppNavigator() {
 
   const changeTab = (tab) => {
     setCurrentTab(tab);
+  };
+
+  const handleTabChange = (tab) => {
+    if (tab === 'Product' && currentTab === 'Product') {
+      setCatalogResetKey(prev => prev + 1);
+    }
+    changeTab(tab);
+  };
+
+  const handleCatalogDoubleTap = () => {
+    changeTab('Product');
+    setCatalogResetKey(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -143,6 +156,7 @@ function MainAppNavigator() {
           <ProductScreen
             onOpenMenu={() => setSideMenuVisible(true)}
             onSelectProduct={(p) => changeTab('Cart')}
+            resetKey={catalogResetKey}
           />
         </View>
 
@@ -199,7 +213,8 @@ function MainAppNavigator() {
       {showBottomBar && (
         <BottomTabBar
           activeTab={currentTab}
-          onTabChange={(tab) => changeTab(tab)}
+          onTabChange={handleTabChange}
+          onCatalogDoubleTap={handleCatalogDoubleTap}
         />
       )}
 

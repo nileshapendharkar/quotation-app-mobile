@@ -10,9 +10,27 @@ const TABS = [
   { id: 'Orders', label: 'ORDER', isImage: true, activeSource: require('../../assets/order.png'), inactiveSource: require('../../assets/order-line.png') },
 ];
 
-function BottomTabBar({ activeTab, onTabChange }) {
+function BottomTabBar({ activeTab, onTabChange, onCatalogDoubleTap }) {
   const { cartItems } = useContext(CartContext);
   const cartCount = (cartItems && cartItems.length) || 0;
+  const lastCatalogTapRef = React.useRef(0);
+
+  const handleTabPress = (tabId) => {
+    const now = Date.now();
+    if (tabId === 'Product') {
+      const elapsed = now - lastCatalogTapRef.current;
+      if (elapsed < 450) {
+        // Double-tap detected on CATALOG button
+        lastCatalogTapRef.current = 0;
+        if (onCatalogDoubleTap) {
+          onCatalogDoubleTap();
+        }
+        return;
+      }
+      lastCatalogTapRef.current = now;
+    }
+    onTabChange(tabId);
+  };
 
   return (
     <View style={styles.container}>
@@ -24,16 +42,16 @@ function BottomTabBar({ activeTab, onTabChange }) {
           <TouchableOpacity
             key={tab.id}
             style={styles.tabButton}
-            onPress={() => onTabChange(tab.id)}
+            onPress={() => handleTabPress(tab.id)}
             activeOpacity={0.7}
           >
             {isActive ? (
               <View style={styles.activeTabWrapper}>
                 <View style={styles.activeCircle}>
                   {tab.isImage ? (
-                    <Image source={iconSource} style={{ width: 30, height: 30, tintColor: '#27347a' }} resizeMode="contain" />
+                    <Image source={iconSource} style={{ width: 32, height: 32, tintColor: '#27347a' }} resizeMode="contain" />
                   ) : (
-                    <IconComponent size={30} color="#27347a" fill="#27347a" />
+                    <IconComponent size={32} color="#27347a" fill="#27347a" />
                   )}
                 </View>
                 {tab.label ? <Text style={styles.activeTabLabel}>{tab.label}</Text> : null}
@@ -41,9 +59,9 @@ function BottomTabBar({ activeTab, onTabChange }) {
             ) : (
               <View style={styles.inactiveIconContainer}>
                 {tab.isImage ? (
-                  <Image source={iconSource} style={{ width: 26, height: 26, tintColor: '#64748b' }} resizeMode="contain" />
+                  <Image source={iconSource} style={{ width: 28, height: 28, tintColor: '#334155' }} resizeMode="contain" />
                 ) : (
-                  <IconComponent size={26} color="#64748b" />
+                  <IconComponent size={28} color="#334155" />
                 )}
                 {tab.showBadge && cartCount > 0 && (
                   <View style={styles.badge}>
@@ -68,13 +86,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-    shadowColor: '#000',
+    borderTopWidth: 1.5,
+    borderTopColor: '#e2e8f0',
+    shadowColor: '#0f172a',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.12,
     shadowRadius: 10,
-    elevation: 10,
+    elevation: 20,
+    zIndex: 1000,
   },
   tabButton: {
     alignItems: 'center',
@@ -96,13 +115,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#27347a', // The dark blue from screenshot
+    borderWidth: 2.5,
+    borderColor: '#27347a',
     shadowColor: '#27347a',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 8,
     marginBottom: 4,
   },
   activeTabLabel: {
