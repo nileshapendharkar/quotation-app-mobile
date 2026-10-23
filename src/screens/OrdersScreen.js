@@ -214,6 +214,12 @@ export default function OrdersScreen({ onNavigateBack }) {
           contentContainerStyle={styles.listContent}
           refreshing={refreshing}
           onRefresh={handleRefresh}
+          removeClippedSubviews={true}
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          updateCellsBatchingPeriod={50}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.orderCard}>
               {/* Order Meta Header Grid: Date, Order No, Status */}

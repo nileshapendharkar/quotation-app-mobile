@@ -54,13 +54,19 @@ export default function FavoriteScreen({ onNavigateHome, onOpenMenu, onNavigateN
             data={favorites}
             keyExtractor={(item) => item.id}
             numColumns={2}
+            removeClippedSubviews={true}
+            initialNumToRender={6}
+            maxToRenderPerBatch={6}
+            windowSize={5}
+            updateCellsBatchingPeriod={50}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => (
               <View style={styles.favoriteCard}>
                 
                 {/* Top Image Section */}
                 <View style={styles.cardImageContainer}>
-                  <Image source={getImageUrl(item.image)} style={styles.cardImage} resizeMode="contain" />
+                  <Image source={getImageUrl(item.image)} style={styles.cardImage} resizeMode="contain" fadeDuration={0} />
                   <TouchableOpacity style={styles.bookmarkIconBtn} onPress={() => toggleFavorite(item)}>
                     <View style={styles.bookmarkCircle}>
                       <Bookmark color="#ffffff" fill="#ffffff" size={14} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal, BackHandler, ImageBackground, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal, BackHandler, ImageBackground, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { Menu, Search, Filter, Shield, Plus, Minus, X, Check, Bell } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import { apiRequest, getImageUrl } from '../api';
@@ -16,6 +16,21 @@ const BANNERS = [
   require('../../assets/8.png'),
   require('../../assets/9.png')
 ];
+
+const CategoryCardItem = React.memo(({ item, onSelect }) => (
+  <TouchableOpacity style={styles.categoryCard} onPress={() => onSelect(item.id)} activeOpacity={0.75}>
+    <View style={styles.categoryImageWrapper}>
+      {item.image ? (
+        <Image source={getImageUrl(item.image)} style={styles.categoryImage} resizeMode="contain" fadeDuration={0} />
+      ) : (
+        <View style={styles.categoryImagePlaceholder} />
+      )}
+    </View>
+    <View style={styles.categoryTextWrapper}>
+      <Text style={styles.categoryText} numberOfLines={2}>{item.name}</Text>
+    </View>
+  </TouchableOpacity>
+));
 
 export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateNotifications, resetKey }) {
   const { addToCart } = useContext(CartContext);
@@ -288,7 +303,12 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
                 {/* Main Category Chips if a category is selected */}
                 {selectedCat && !search && (
                   <View style={[styles.subCategorySection, { paddingBottom: currentSubCats.length > 0 ? 5 : 16 }]}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
+                    <ScrollView 
+                      horizontal 
+                      showsHorizontalScrollIndicator={false} 
+                      contentContainerStyle={styles.chipScroll}
+                      nestedScrollEnabled={true}
+                    >
                       {categories.filter(c => c.id !== '').map((cat) => {
                         const isSelCat = selectedCat === cat.id;
                         return (
@@ -308,7 +328,12 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
                 {/* Subcategory Chips if a category is selected */}
                 {selectedCat && !search && currentSubCats.length > 0 && (
                   <View style={[styles.subCategorySection, { paddingTop: 5 }]}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
+                    <ScrollView 
+                      horizontal 
+                      showsHorizontalScrollIndicator={false} 
+                      contentContainerStyle={styles.chipScroll}
+                      nestedScrollEnabled={true}
+                    >
                       <TouchableOpacity
                         style={[styles.catChip, !selectedSubCat && styles.catChipActive]}
                         onPress={() => setSelectedSubCat('')}
@@ -338,14 +363,20 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
               </View>
             }
             contentContainerStyle={styles.productsFlatListContent}
-            removeClippedSubviews={Platform.OS === 'android'}
-            maxToRenderPerBatch={8}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={6}
             windowSize={5}
-            initialNumToRender={8}
+            initialNumToRender={6}
+            updateCellsBatchingPeriod={50}
             showsVerticalScrollIndicator={false}
           />
         ) : (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          <ScrollView 
+            showsVerticalScrollIndicator={false} 
+            contentContainerStyle={styles.scrollContent}
+            nestedScrollEnabled={true}
+            removeClippedSubviews={Platform.OS === 'android'}
+          >
             {/* Banner Slider */}
             <View style={styles.bannerWrapper}>
               <ScrollView 
@@ -353,8 +384,9 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
                 horizontal 
                 pagingEnabled 
                 showsHorizontalScrollIndicator={false} 
-                onScroll={handleBannerScroll}
-                scrollEventThrottle={16}
+                onMomentumScrollEnd={handleBannerScroll}
+                nestedScrollEnabled={true}
+                scrollEventThrottle={32}
               >
                 {BANNERS.map((img, idx) => (
                   <Image key={idx} source={img} style={styles.bannerImage} resizeMode="stretch" fadeDuration={0} />
@@ -372,18 +404,7 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
               <Text style={styles.sectionTitle}>Categories</Text>
               <View style={styles.categoriesGrid}>
                 {categories.filter(c => c.id !== '').map((item) => (
-                  <TouchableOpacity key={item.id} style={styles.categoryCard} onPress={() => handleSelectCategory(item.id)}>
-                    <View style={styles.categoryImageWrapper}>
-                      {item.image ? (
-                        <Image source={getImageUrl(item.image)} style={styles.categoryImage} resizeMode="contain" fadeDuration={0} />
-                      ) : (
-                        <View style={styles.categoryImagePlaceholder} />
-                      )}
-                    </View>
-                    <View style={styles.categoryTextWrapper}>
-                      <Text style={styles.categoryText} numberOfLines={2}>{item.name}</Text>
-                    </View>
-                  </TouchableOpacity>
+                  <CategoryCardItem key={item.id} item={item} onSelect={handleSelectCategory} />
                 ))}
               </View>
             </View>

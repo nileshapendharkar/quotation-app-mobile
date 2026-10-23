@@ -53,7 +53,9 @@ function ProductCard({ product, onSelect, favorited = false, onToggleFavorite })
 export default React.memo(ProductCard, (prev, next) => {
   return prev.product.id === next.product.id &&
          prev.product.name === next.product.name &&
-         prev.favorited === next.favorited;
+         prev.favorited === next.favorited &&
+         prev.onSelect === next.onSelect &&
+         prev.onToggleFavorite === next.onToggleFavorite;
 });
 
 const styles = StyleSheet.create({

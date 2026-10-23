@@ -355,13 +355,19 @@ export default function CartScreen({ onNavigateOrders, onOpenMenu, onNavigateNot
             <FlatList
               data={cartItems}
               keyExtractor={(item) => item.productId + '_' + (item.size || '')}
+              removeClippedSubviews={true}
+              initialNumToRender={6}
+              maxToRenderPerBatch={6}
+              windowSize={5}
+              updateCellsBatchingPeriod={50}
+              showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <View style={styles.cartListItem}>
                   
                   {/* Left Column: Image + Remove */}
                   <View style={styles.leftColumn}>
                     <View style={styles.imageContainer}>
-                      <Image source={getImageUrl(item.image)} style={styles.itemImage} resizeMode="contain" />
+                      <Image source={getImageUrl(item.image)} style={styles.itemImage} resizeMode="contain" fadeDuration={0} />
                     </View>
                     <TouchableOpacity style={styles.removeBtn} onPress={() => removeFromCart(item.productId, item.size)}>
                       <Trash2 size={12} color="#ffffff" />

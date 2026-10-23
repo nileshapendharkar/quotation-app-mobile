@@ -60,7 +60,11 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}
+        >
           {/* Welcome Card */}
           <View style={styles.welcomeCard}>
             <View style={styles.welcomeTextContent}>
@@ -87,7 +91,12 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
           </View>
 
           {/* Horizontal Tabs */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContainer}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.tabsContainer}
+            nestedScrollEnabled={true}
+          >
             {tabs.map((tab) => (
               <TouchableOpacity key={tab} style={styles.tabBtn} onPress={() => handleTabPress(tab)}>
                 <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
@@ -102,8 +111,9 @@ export default function HomeScreen({ onOpenMenu, onNavigateProduct, onNavigateOr
             showsHorizontalScrollIndicator={false} 
             contentContainerStyle={styles.cardsScrollContainer}
             ref={scrollRef}
-            onScroll={handleCardsScroll}
-            scrollEventThrottle={16}
+            onMomentumScrollEnd={handleCardsScroll}
+            nestedScrollEnabled={true}
+            scrollEventThrottle={32}
           >
             {/* Create Card */}
             <TouchableOpacity style={styles.createCard} onPress={onNavigateProduct}>
