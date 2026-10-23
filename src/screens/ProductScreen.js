@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useMemo, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Image, Modal, BackHandler, ImageBackground, SafeAreaView, Dimensions, Platform } from 'react-native';
-import { Menu, Search, Filter, Shield, Plus, Minus, X, Check, Bell } from 'lucide-react-native';
+import { Menu, Search, Filter, Shield, Plus, Minus, X, Check, Bell, ShoppingCart } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import { apiRequest, getImageUrl } from '../api';
 import { CartContext } from '../context/CartContext';
@@ -421,144 +421,156 @@ export default function ProductScreen({ onOpenMenu, onSelectProduct, onNavigateN
             onPress={() => setSelectedProduct(null)}
           />
           <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
-            <View style={{ width: '100%' }}>
-              <View style={styles.modalHeader}>
-                <View style={{ flex: 1, paddingRight: 8, justifyContent: 'center' }}>
-                  <Text style={styles.modalProductTitle} numberOfLines={2}>
-                    {selectedProduct.name}
-                  </Text>
-                  <Text style={styles.modalCategoryTitle} numberOfLines={1}>
-                    {selectedProduct.categoryName || 'Catalog Item'}
-                  </Text>
-                </View>
-                <View style={styles.modalHeaderThumbnailBox}>
-                  <Image 
-                    source={getImageUrl(selectedProduct.image)} 
-                    style={styles.modalHeaderThumbnail} 
-                    resizeMode="contain" 
-                  />
-                </View>
-                <TouchableOpacity 
-                  style={styles.closeModalBtn} 
-                  onPress={() => setSelectedProduct(null)}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <X size={20} color="#64748b" />
-                </TouchableOpacity>
+            <View style={styles.modalHeader}>
+              <View style={{ flex: 1, paddingRight: 8, justifyContent: 'center' }}>
+                <Text style={styles.modalProductTitle} numberOfLines={2}>
+                  {selectedProduct.name}
+                </Text>
+                <Text style={styles.modalCategoryTitle} numberOfLines={1}>
+                  {selectedProduct.categoryName || 'Catalog Item'}
+                </Text>
               </View>
+              <View style={styles.modalHeaderThumbnailBox}>
+                <Image 
+                  source={getImageUrl(selectedProduct.image)} 
+                  style={styles.modalHeaderThumbnail} 
+                  resizeMode="contain" 
+                />
+              </View>
+              <TouchableOpacity 
+                style={styles.closeModalBtn} 
+                onPress={() => setSelectedProduct(null)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <X size={20} color="#64748b" />
+              </TouchableOpacity>
+            </View>
 
-              {successMsg && (
-                <View style={{ backgroundColor: '#10b981', padding: 8, borderRadius: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  <Check size={16} color="#ffffff" style={{ marginRight: 6 }} />
-                  <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '800' }}>
-                    Added {lastAddedInfo} to Cart! Select another size to add more.
-                  </Text>
+            {successMsg && (
+              <View style={styles.successBanner}>
+                <Check size={16} color="#ffffff" style={{ marginRight: 6 }} />
+                <Text style={styles.successBannerText}>
+                  Added {lastAddedInfo} to Cart! Select another size to add more.
+                </Text>
+              </View>
+            )}
+
+            <ScrollView 
+              showsVerticalScrollIndicator={true} 
+              style={styles.modalScroll} 
+              contentContainerStyle={styles.modalScrollContent}
+              nestedScrollEnabled={true}
+              bounces={false}
+            >
+              {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                <View style={styles.sizesSection}>
+                  <Text style={styles.sizeSelectionLabel}>Select Size <Text style={{ color: '#ef4444' }}>*</Text></Text>
+                  <View style={styles.sizeChipsRow}>
+                    {selectedProduct.sizes.map((sz, i) => {
+                      const isSel = selectedSize === sz;
+                      return (
+                        <TouchableOpacity
+                          key={i}
+                          style={[styles.sizeSelectorChip, isSel && styles.sizeSelectorChipActive]}
+                          onPress={() => setSelectedSize(sz)}
+                        >
+                          <Text style={[styles.sizeSelectorChipText, isSel && styles.sizeSelectorChipTextActive]}>
+                            {sz}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
                 </View>
               )}
 
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll} bounces={false}>
-                {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
-                  <View style={styles.sizesSection}>
-                    <Text style={styles.sizeSelectionLabel}>Select Size <Text style={{ color: '#ef4444' }}>*</Text></Text>
-                    <View style={styles.sizeChipsRow}>
-                      {selectedProduct.sizes.map((sz, i) => {
-                        const isSel = selectedSize === sz;
-                        return (
-                          <TouchableOpacity
-                            key={i}
-                            style={[styles.sizeSelectorChip, isSel && styles.sizeSelectorChipActive]}
-                            onPress={() => setSelectedSize(sz)}
-                          >
-                            <Text style={[styles.sizeSelectorChipText, isSel && styles.sizeSelectorChipTextActive]}>
-                              {sz}
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </View>
-                )}
-
-                <View style={styles.detailsBlock}>
-                  <Text style={styles.detailsBlockTitle}>Product Details</Text>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Product Category</Text>
-                    <Text style={styles.detailValue}>{selectedProduct.categoryName || 'N/A'}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Product Name</Text>
-                    <Text style={[styles.detailValue, { flex: 1, textAlign: 'right', marginLeft: 16 }]} numberOfLines={1}>{selectedProduct.name}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Unit of Measure (UOM)</Text>
-                    <Text style={styles.detailValue}>{selectedProduct.uom || 'Nos'}</Text>
-                  </View>
-                  {selectedSize ? (
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Selected Size</Text>
-                      <Text style={[styles.detailValue, { color: '#0ea5e9', fontWeight: '700' }]}>{selectedSize}</Text>
-                    </View>
-                  ) : null}
-                  {selectedProduct.sizeProductCodes && selectedProduct.sizeProductCodes[selectedSize] ? (
-                    <View style={[styles.detailRow, !selectedProduct.packSize && !selectedProduct.packSizes && { borderBottomWidth: 0 }]}>
-                      <Text style={styles.detailLabel}>Product Code</Text>
-                      <Text style={[styles.detailValue, { color: '#0ea5e9', fontWeight: '700' }]}>{selectedProduct.sizeProductCodes[selectedSize]}</Text>
-                    </View>
-                  ) : null}
-                  {(selectedProduct.packSizes && selectedProduct.packSizes[selectedSize]) || selectedProduct.packSize ? (
-                    <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
-                      <Text style={styles.detailLabel}>Packing</Text>
-                      <Text style={[styles.detailValue, { color: '#10b981', fontWeight: '700' }]}>
-                        {selectedProduct.packSizes && selectedProduct.packSizes[selectedSize] ? `${selectedProduct.packSizes[selectedSize]} Units / Pack` : `${selectedProduct.packSize} Units / Pack`}
-                      </Text>
-                    </View>
-                  ) : null}
+              <View style={styles.detailsBlock}>
+                <Text style={styles.detailsBlockTitle}>Product Details</Text>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Product Category</Text>
+                  <Text style={styles.detailValue}>{selectedProduct.categoryName || 'N/A'}</Text>
                 </View>
-
-                <View style={styles.descSection}>
-                  <Text style={styles.modalSectionTitle}>Description</Text>
-                  <Text style={styles.modalDescription}>
-                    {selectedProduct.description || `${selectedProduct.name}.${selectedProduct.sizes && selectedProduct.sizes.length > 0 ? ` Available sizes: ${selectedProduct.sizes.join(', ')}.` : ''}`}
-                  </Text>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Product Name</Text>
+                  <Text style={[styles.detailValue, { flex: 1, textAlign: 'right', marginLeft: 16 }]} numberOfLines={1}>{selectedProduct.name}</Text>
                 </View>
-
-                {selectedProduct.details ? (
-                  <View style={{ marginBottom: 8 }}>
-                    <Text style={styles.modalSectionTitle}>Details</Text>
-                    <Text style={styles.modalDescription}>{selectedProduct.details}</Text>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Unit of Measure (UOM)</Text>
+                  <Text style={styles.detailValue}>{selectedProduct.uom || 'Nos'}</Text>
+                </View>
+                {selectedSize ? (
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>Selected Size</Text>
+                    <Text style={[styles.detailValue, { color: '#0ea5e9', fontWeight: '700' }]}>{selectedSize}</Text>
                   </View>
                 ) : null}
-
-                {selectedProduct.specification ? (
-                  <View style={{ marginBottom: 8 }}>
-                    <Text style={styles.modalSectionTitle}>Specifications</Text>
-                    <Text style={styles.modalDescription}>{selectedProduct.specification}</Text>
+                {selectedProduct.sizeProductCodes && selectedProduct.sizeProductCodes[selectedSize] ? (
+                  <View style={[styles.detailRow, !selectedProduct.packSize && !selectedProduct.packSizes && { borderBottomWidth: 0 }]}>
+                    <Text style={styles.detailLabel}>Product Code</Text>
+                    <Text style={[styles.detailValue, { color: '#0ea5e9', fontWeight: '700' }]}>{selectedProduct.sizeProductCodes[selectedSize]}</Text>
                   </View>
                 ) : null}
-
-                <View style={styles.qtySection}>
-                  <Text style={styles.modalSectionTitle}>Configure Quantity</Text>
-                  <View style={styles.stepperContainer}>
-                    <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => Math.max(1, prev - 10))}>
-                      <Text style={styles.stepperBtnTxt}>-10</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => Math.max(1, prev - 1))}>
-                      <Minus size={14} color="#0f172a" />
-                    </TouchableOpacity>
-                    <Text style={styles.stepperValue}>{qty}</Text>
-                    <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => prev + 1)}>
-                      <Plus size={14} color="#0f172a" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => prev + 10)}>
-                      <Text style={styles.stepperBtnTxt}>+10</Text>
-                    </TouchableOpacity>
+                {(selectedProduct.packSizes && selectedProduct.packSizes[selectedSize]) || selectedProduct.packSize ? (
+                  <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
+                    <Text style={styles.detailLabel}>Packing</Text>
+                    <Text style={[styles.detailValue, { color: '#10b981', fontWeight: '700' }]}>
+                      {selectedProduct.packSizes && selectedProduct.packSizes[selectedSize] ? `${selectedProduct.packSizes[selectedSize]} Units / Pack` : `${selectedProduct.packSize} Units / Pack`}
+                    </Text>
                   </View>
-                </View>
+                ) : null}
+              </View>
 
-                <TouchableOpacity style={styles.confirmAddBtn} onPress={handleConfirmAddToCart}>
-                  <Text style={styles.confirmAddBtnText}>Add to Quote Cart</Text>
-                </TouchableOpacity>
-              </ScrollView>
+              <View style={styles.descSection}>
+                <Text style={styles.modalSectionTitle}>Description</Text>
+                <Text style={styles.modalDescription}>
+                  {selectedProduct.description || `${selectedProduct.name}.${selectedProduct.sizes && selectedProduct.sizes.length > 0 ? ` Available sizes: ${selectedProduct.sizes.join(', ')}.` : ''}`}
+                </Text>
+              </View>
+
+              {selectedProduct.details ? (
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={styles.modalSectionTitle}>Details</Text>
+                  <Text style={styles.modalDescription}>{selectedProduct.details}</Text>
+                </View>
+              ) : null}
+
+              {selectedProduct.specification ? (
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={styles.modalSectionTitle}>Specifications</Text>
+                  <Text style={styles.modalDescription}>{selectedProduct.specification}</Text>
+                </View>
+              ) : null}
+
+              <View style={styles.qtySection}>
+                <Text style={styles.modalSectionTitle}>Configure Quantity</Text>
+                <View style={styles.stepperContainer}>
+                  <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => Math.max(1, prev - 10))}>
+                    <Text style={styles.stepperBtnTxt}>-10</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => Math.max(1, prev - 1))}>
+                    <Minus size={14} color="#0f172a" />
+                  </TouchableOpacity>
+                  <Text style={styles.stepperValue}>{qty}</Text>
+                  <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => prev + 1)}>
+                    <Plus size={14} color="#0f172a" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.stepperBtn} onPress={() => setQty(prev => prev + 10)}>
+                    <Text style={styles.stepperBtnTxt}>+10</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* Fixed Bottom Action Footer: Always 100% visible, placed right above the bottom tab bar */}
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.confirmAddBtn} 
+                onPress={handleConfirmAddToCart}
+                activeOpacity={0.85}
+              >
+                <ShoppingCart size={18} color="#ffffff" style={{ marginRight: 8 }} />
+                <Text style={styles.confirmAddBtnText}>Add to Quote Cart</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -807,9 +819,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'transparent',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingBottom: 6,
+    paddingTop: 16,
     zIndex: 999,
   },
   modalBackdrop: {
@@ -818,20 +832,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   modalContent: {
     width: '100%',
-    maxHeight: '94%',
+    maxHeight: '96%',
     backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 16,
-    elevation: 16,
+    borderRadius: 22,
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    elevation: 24,
     shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 14,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
     zIndex: 1000,
+    flexDirection: 'column',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -880,7 +897,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalScroll: {
-    maxHeight: 460,
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  modalScrollContent: {
+    paddingBottom: 10,
   },
   sizesSection: {
     marginBottom: 10,
@@ -992,18 +1013,44 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#0f172a',
   },
+  modalFooter: {
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    backgroundColor: '#ffffff',
+  },
   confirmAddBtn: {
     width: '100%',
-    height: 48,
+    height: 50,
     backgroundColor: '#0ea5e9',
     borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 4,
+    shadowColor: '#0ea5e9',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   confirmAddBtnText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  successBanner: {
+    backgroundColor: '#10b981',
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successBannerText: {
+    color: '#ffffff',
+    fontSize: 12,
     fontWeight: '800',
   },
   successMessageBtn: {
